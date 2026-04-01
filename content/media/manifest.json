@@ -1,0 +1,25 @@
+{
+  "images": [
+    {
+      "src": "/media/logo.svg",
+      "alt": "Lorem Ipsum Co. logo",
+      "width": 200,
+      "height": 44,
+      "usedIn": ["site.config.json"]
+    },
+    {
+      "src": "/media/hero-placeholder.svg",
+      "alt": "Lorem ipsum dolor sit amet consectetur",
+      "width": 800,
+      "height": 600,
+      "usedIn": ["home.data.json"]
+    },
+    {
+      "src": "/media/services-hero.svg",
+      "alt": "Lorem ipsum dolor sit amet consectetur adipiscing",
+      "width": 800,
+      "height": 600,
+      "usedIn": ["services.data.json"]
+    }
+  ]
+}

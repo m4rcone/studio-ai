@@ -1,7 +1,15 @@
-export default function Page() {
+import { getPageData } from "@/lib/content";
+import { getSectionComponent } from "@/lib/section-registry";
+
+export default async function HomePage() {
+  const page = await getPageData("home");
+
   return (
-    <main className="flex min-h-screen flex-col items-center justify-center">
-      <h1 className="text-4xl font-bold">Hello, World!</h1>
-    </main>
+    <>
+      {page.sections.map((section) => {
+        const Section = getSectionComponent(section.type);
+        return <Section key={section.id} {...section.data} />;
+      })}
+    </>
   );
 }

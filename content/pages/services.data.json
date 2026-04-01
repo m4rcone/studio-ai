@@ -1,0 +1,85 @@
+{
+  "slug": "services",
+  "meta": {
+    "title": "Ipsum",
+    "description": "Lorem ipsum dolor sit amet consectetur adipiscing elit sed do eiusmod tempor incididunt ut labore et dolore."
+  },
+  "sections": [
+    {
+      "type": "hero",
+      "id": "hero-services",
+      "data": {
+        "headline": "Dolor sit amet consectetur adipiscing elit",
+        "subheadline": "Ut enim ad minim veniam quis nostrud exercitation ullamco laboris nisi ut aliquip ex ea commodo consequat.",
+        "cta": {
+          "label": "Lorem ipsum",
+          "href": "/contact",
+          "style": "primary"
+        },
+        "image": {
+          "src": "/media/services-hero.svg",
+          "alt": "Lorem ipsum dolor sit amet consectetur adipiscing"
+        }
+      }
+    },
+    {
+      "type": "features",
+      "id": "services-list",
+      "data": {
+        "headline": "Lorem ipsum dolor sit amet",
+        "subheadline": "Consectetur adipiscing elit sed do eiusmod tempor incididunt ut labore et dolore magna aliqua.",
+        "items": [
+          {
+            "id": "lorem-ipsum",
+            "title": "Lorem Ipsum",
+            "description": "Ut enim ad minim veniam quis nostrud exercitation ullamco laboris nisi ut aliquip ex ea commodo consequat.",
+            "icon": "🎯"
+          },
+          {
+            "id": "dolor-sit",
+            "title": "Dolor Sit",
+            "description": "Duis aute irure dolor in reprehenderit in voluptate velit esse cillum dolore eu fugiat nulla pariatur.",
+            "icon": "⚙️"
+          },
+          {
+            "id": "amet-consectetur",
+            "title": "Amet Consectetur",
+            "description": "Excepteur sint occaecat cupidatat non proident sunt in culpa qui officia deserunt mollit anim id est laborum.",
+            "icon": "🛡️"
+          },
+          {
+            "id": "adipiscing-elit",
+            "title": "Adipiscing Elit",
+            "description": "Sed ut perspiciatis unde omnis iste natus error sit voluptatem accusantium doloremque laudantium totam.",
+            "icon": "📚"
+          },
+          {
+            "id": "sed-do",
+            "title": "Sed Do Eiusmod",
+            "description": "Nemo enim ipsam voluptatem quia voluptas sit aspernatur aut odit aut fugit sed quia consequuntur.",
+            "icon": "📊"
+          },
+          {
+            "id": "tempor-incididunt",
+            "title": "Tempor Incididunt",
+            "description": "Neque porro quisquam est qui dolorem ipsum quia dolor sit amet consectetur adipisci velit sed quia.",
+            "icon": "⚡"
+          }
+        ]
+      }
+    },
+    {
+      "type": "cta",
+      "id": "cta-bottom",
+      "data": {
+        "headline": "Lorem ipsum dolor sit amet consectetur?",
+        "text": "Adipiscing elit sed do eiusmod tempor incididunt ut labore et dolore magna aliqua ut enim.",
+        "cta": {
+          "label": "Lorem ipsum dolor",
+          "href": "/contact",
+          "style": "primary"
+        }
+      }
+    }
+  ]
+}

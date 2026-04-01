@@ -1,0 +1,26 @@
+{
+  "slug": "home",
+  "meta": {
+    "title": "Lorem Ipsum",
+    "description": "Lorem ipsum dolor sit amet consectetur adipiscing elit sed do eiusmod tempor incididunt ut labore."
+  },
+  "sections": [
+    {
+      "type": "hero",
+      "id": "hero-main",
+      "data": {
+        "headline": "Lorem ipsum dolor sit amet consectetur adipiscing",
+        "subheadline": "Sed do eiusmod tempor incididunt ut labore et dolore magna aliqua. Ut enim ad minim veniam quis nostrud exercitation.",
+        "cta": {
+          "label": "Lorem ipsum",
+          "href": "/contact",
+          "style": "primary"
+        },
+        "image": {
+          "src": "/media/hero-placeholder.svg",
+          "alt": "Lorem ipsum dolor sit amet consectetur"
+        }
+      }
+    }
+  ]
+}

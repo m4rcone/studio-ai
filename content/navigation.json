@@ -1,0 +1,24 @@
+{
+  "header": {
+    "links": [
+      { "label": "Lorem", "href": "/" },
+      { "label": "Ipsum", "href": "/services" },
+      { "label": "Dolor", "href": "/about" },
+      { "label": "Amet", "href": "/contact" }
+    ],
+    "cta": {
+      "label": "Consectetur",
+      "href": "/contact",
+      "style": "primary"
+    }
+  },
+  "footer": {
+    "links": [
+      { "label": "Lorem Policy", "href": "/privacy-policy" },
+      { "label": "Ipsum Terms", "href": "/terms-of-use" }
+    ],
+    "copyright": "© 2026 Lorem Ipsum Co. All rights reserved.",
+    "contactLabel": "Lorem",
+    "socialLabel": "Ipsum"
+  }
+}
