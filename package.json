@@ -1,10 +1,13 @@
 {
-  "name": "claude-code",
+  "name": "an-idea",
   "version": "1.0.0",
   "description": "",
   "main": "index.js",
   "scripts": {
+    "generate-theme": "node scripts/generate-theme.mjs",
+    "predev": "node scripts/generate-theme.mjs",
     "dev": "next dev",
+    "prebuild": "node scripts/generate-theme.mjs",
     "build": "next build",
     "start": "next start",
     "lint": "eslint",
@@ -28,6 +31,7 @@
     "prettier": "^3.8.1",
     "prettier-plugin-tailwindcss": "^0.7.2",
     "tailwindcss": "^4.2.2",
+    "tsx": "^4.21.0",
     "typescript": "5.9.3"
   }
 }
