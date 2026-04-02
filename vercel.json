@@ -1,0 +1,13 @@
+{
+  "framework": "nextjs",
+  "headers": [
+    {
+      "source": "/studio-ai/(.*)",
+      "headers": [{ "key": "X-Robots-Tag", "value": "noindex, nofollow" }]
+    },
+    {
+      "source": "/api/studio/(.*)",
+      "headers": [{ "key": "X-Robots-Tag", "value": "noindex" }]
+    }
+  ]
+}
