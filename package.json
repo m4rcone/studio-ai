@@ -5,6 +5,7 @@
   "main": "index.js",
   "scripts": {
     "generate-theme": "node scripts/generate-theme.mjs",
+    "generate-favicon": "node scripts/generate-favicon.mjs",
     "predev": "node scripts/generate-theme.mjs",
     "dev": "next dev",
     "prebuild": "node scripts/generate-theme.mjs",
