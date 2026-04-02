@@ -26,7 +26,7 @@ const secondary = config.theme.colors.secondary;
 function buildSvg(size) {
   const s = size;
   const pad = s * 0.2;
-  const w = s - pad * 2;
+  // const w = s - pad * 2;
 
   // Triangle "A" — two legs and a crossbar
   const tipX = s / 2;
@@ -107,4 +107,6 @@ const ico = buildIco(pngBuffers, sizes);
 const outPath = path.join(root, "src/app/favicon.ico");
 writeFileSync(outPath, ico);
 
-console.log(`✓ favicon.ico generated (${sizes.join("×, ")}×px) → src/app/favicon.ico`);
+console.log(
+  `✓ favicon.ico generated (${sizes.join("×, ")}×px) → src/app/favicon.ico`,
+);

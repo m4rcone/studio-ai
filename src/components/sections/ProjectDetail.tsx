@@ -44,7 +44,10 @@ export function ProjectDetail({
   return (
     <article className="bg-background">
       {/* Hero image */}
-      <div className="relative w-full overflow-hidden" style={{ height: "clamp(320px, 55vh, 680px)" }}>
+      <div
+        className="relative w-full overflow-hidden"
+        style={{ height: "clamp(320px, 55vh, 680px)" }}
+      >
         <Image
           src={image.src}
           alt={image.alt}
@@ -53,7 +56,7 @@ export function ProjectDetail({
           className="object-cover"
           sizes="100vw"
         />
-        <div className="absolute inset-0 bg-foreground/10" />
+        <div className="bg-foreground/10 absolute inset-0" />
       </div>
 
       {/* Content */}

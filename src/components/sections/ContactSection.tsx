@@ -143,7 +143,7 @@ export function ContactSection({
                       name={field.name}
                       required={field.required}
                       rows={4}
-                      className="bg-background border-foreground/10 text-foreground focus:border-secondary w-full resize-none border px-4 py-3 text-sm transition-colors focus:outline-none focus-visible:ring-2 focus-visible:ring-secondary"
+                      className="bg-background border-foreground/10 text-foreground focus:border-secondary focus-visible:ring-secondary w-full resize-none border px-4 py-3 text-sm transition-colors focus:outline-none focus-visible:ring-2"
                     />
                   ) : (
                     <input
@@ -160,7 +160,7 @@ export function ContactSection({
                               ? "name"
                               : undefined
                       }
-                      className="bg-background border-foreground/10 text-foreground focus:border-secondary w-full border px-4 py-3 text-sm transition-colors focus:outline-none focus-visible:ring-2 focus-visible:ring-secondary"
+                      className="bg-background border-foreground/10 text-foreground focus:border-secondary focus-visible:ring-secondary w-full border px-4 py-3 text-sm transition-colors focus:outline-none focus-visible:ring-2"
                     />
                   )}
                 </div>
