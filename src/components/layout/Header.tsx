@@ -1,102 +1,115 @@
 "use client";
 
-import { useState } from "react";
 import Link from "next/link";
-import Image from "next/image";
-import type { SiteConfig, Navigation } from "@/lib/content";
+import { useState } from "react";
+import { Button } from "@/components/ui/Button";
+import type { ButtonStyle } from "@/components/ui/Button";
+import type { SiteConfig, Navigation } from "@/types/content";
 
 interface HeaderProps {
-  brand: SiteConfig["brand"];
-  nav: Navigation["header"];
+  config: SiteConfig;
+  nav: Navigation;
 }
 
-export function Header({ brand, nav }: HeaderProps) {
-  const [open, setOpen] = useState(false);
+export function Header({ config, nav }: HeaderProps) {
+  const [mobileOpen, setMobileOpen] = useState(false);
 
   return (
-    <header className="border-foreground/10 bg-background border-b">
-      <div className="mx-auto flex max-w-6xl items-center justify-between px-4 py-4">
-        {/* Logo */}
-        <Link href="/" className="flex items-center gap-2">
-          {brand.logo && (
-            <Image
-              src={brand.logo}
-              alt={brand.name}
-              width={160}
-              height={32}
-              className="h-8 w-auto"
-            />
-          )}
-          <span className="font-heading text-foreground text-lg font-semibold">
-            {brand.name}
-          </span>
-        </Link>
-
-        {/* Desktop nav */}
-        <nav className="hidden items-center gap-6 md:flex">
-          {nav.links.map((link) => (
-            <Link
-              key={link.href}
-              href={link.href}
-              className="text-muted-foreground hover:text-foreground text-sm transition-colors"
-            >
-              {link.label}
-            </Link>
-          ))}
+    <>
+      <header className="bg-background/95 border-foreground/5 sticky top-0 z-50 border-b backdrop-blur-sm">
+        <div className="mx-auto flex h-16 max-w-7xl items-center justify-between px-6">
+          {/* Logo */}
           <Link
-            href={nav.cta.href}
-            className="bg-primary text-primary-foreground rounded-(--radius) px-4 py-2 text-sm font-medium transition-opacity hover:opacity-90"
+            href="/"
+            className="text-foreground hover:text-secondary font-[family-name:var(--font-heading)] text-xl transition-colors"
+            onClick={() => setMobileOpen(false)}
           >
-            {nav.cta.label}
+            {config.brand.name}
           </Link>
-        </nav>
 
-        {/* Mobile hamburger */}
-        <button
-          className="flex flex-col gap-1.5 md:hidden"
-          onClick={() => setOpen((v) => !v)}
-          aria-label={open ? "Close menu" : "Open menu"}
-          aria-expanded={open}
-        >
-          <span
-            className={`bg-foreground block h-0.5 w-6 transition-transform ${open ? "translate-y-2 rotate-45" : ""}`}
-          />
-          <span
-            className={`bg-foreground block h-0.5 w-6 transition-opacity ${open ? "opacity-0" : ""}`}
-          />
-          <span
-            className={`bg-foreground block h-0.5 w-6 transition-transform ${open ? "-translate-y-2 -rotate-45" : ""}`}
-          />
-        </button>
-      </div>
-
-      {/* Mobile menu */}
-      {open && (
-        <nav className="border-foreground/10 bg-background border-t px-4 pb-4 md:hidden">
-          <ul className="flex flex-col gap-4 pt-4">
-            {nav.links.map((link) => (
-              <li key={link.href}>
-                <Link
-                  href={link.href}
-                  className="text-muted-foreground hover:text-foreground text-sm"
-                  onClick={() => setOpen(false)}
-                >
-                  {link.label}
-                </Link>
-              </li>
-            ))}
-            <li>
+          {/* Desktop nav */}
+          <nav className="hidden items-center gap-8 md:flex">
+            {nav.header.links.map((link) => (
               <Link
-                href={nav.cta.href}
-                className="bg-primary text-primary-foreground inline-block rounded-(--radius) px-4 py-2 text-sm font-medium"
-                onClick={() => setOpen(false)}
+                key={link.href}
+                href={link.href}
+                className="text-muted-foreground hover:text-foreground group relative text-sm transition-colors"
               >
-                {nav.cta.label}
+                {link.label}
+                <span className="bg-secondary absolute -bottom-0.5 left-0 h-px w-0 transition-[width] duration-300 group-hover:w-full" />
               </Link>
-            </li>
-          </ul>
-        </nav>
+            ))}
+          </nav>
+
+          {/* CTA + hamburger */}
+          <div className="flex items-center gap-4">
+            <div className="hidden md:block">
+              <Button
+                label={nav.header.cta.label}
+                href={nav.header.cta.href}
+                style={nav.header.cta.style as ButtonStyle}
+              />
+            </div>
+            <button
+              className="text-foreground p-2 focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-secondary md:hidden"
+              onClick={() => setMobileOpen((v) => !v)}
+              aria-label={mobileOpen ? "Close menu" : "Open menu"}
+              aria-expanded={mobileOpen}
+              aria-controls="mobile-menu"
+            >
+              {mobileOpen ? (
+                <svg
+                  width="20"
+                  height="20"
+                  viewBox="0 0 20 20"
+                  fill="none"
+                  stroke="currentColor"
+                  strokeWidth="1.5"
+                >
+                  <path d="M4 4l12 12M16 4L4 16" />
+                </svg>
+              ) : (
+                <svg
+                  width="20"
+                  height="20"
+                  viewBox="0 0 20 20"
+                  fill="none"
+                  stroke="currentColor"
+                  strokeWidth="1.5"
+                >
+                  <path d="M3 5h14M3 10h14M3 15h14" />
+                </svg>
+              )}
+            </button>
+          </div>
+        </div>
+      </header>
+
+      {/* Mobile menu overlay */}
+      {mobileOpen && (
+        <div id="mobile-menu" className="bg-background fixed inset-0 z-40 flex flex-col px-6 pt-16 pb-10 md:hidden">
+          <nav className="flex flex-1 flex-col gap-1 pt-8">
+            {nav.header.links.map((link) => (
+              <Link
+                key={link.href}
+                href={link.href}
+                onClick={() => setMobileOpen(false)}
+                className="text-foreground border-foreground/5 hover:text-secondary border-b py-3 font-[family-name:var(--font-heading)] text-3xl transition-colors"
+              >
+                {link.label}
+              </Link>
+            ))}
+          </nav>
+          <div className="pt-8">
+            <Button
+              label={nav.header.cta.label}
+              href={nav.header.cta.href}
+              style={nav.header.cta.style as ButtonStyle}
+              className="w-full justify-center"
+            />
+          </div>
+        </div>
       )}
-    </header>
+    </>
   );
 }

@@ -1,37 +1,54 @@
 import Link from "next/link";
-import { BUTTON_STYLES } from "@/lib/button-styles";
+
+export type ButtonStyle = "primary" | "secondary" | "whatsapp" | "outline";
+
+const BUTTON_STYLES: Record<ButtonStyle, string> = {
+  primary: "bg-primary text-primary-foreground hover:opacity-90",
+  secondary: "bg-secondary text-secondary-foreground hover:opacity-90",
+  whatsapp: "bg-[#25D366] text-white hover:opacity-90",
+  outline:
+    "border border-primary text-primary hover:bg-primary hover:text-primary-foreground",
+};
 
 interface ButtonProps {
   label: string;
-  style?: "primary" | "secondary" | "whatsapp";
+  style?: ButtonStyle;
   href?: string;
   onClick?: () => void;
   className?: string;
+  external?: boolean;
 }
 
-/**
- * Base button component. Renders a <Link> when href is provided,
- * or a <button> for actions without navigation.
- */
 export function Button({
   label,
   style = "primary",
   href,
   onClick,
   className = "",
+  external,
 }: ButtonProps) {
-  const base = `inline-block rounded-[var(--radius)] px-8 py-3 text-base font-semibold transition-opacity ${BUTTON_STYLES[style]} ${className}`;
+  const base =
+    "inline-flex items-center justify-center px-6 py-3 text-sm font-medium tracking-wide transition duration-200 cursor-pointer focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-secondary focus-visible:ring-offset-2";
+  const classes = `${base} ${BUTTON_STYLES[style]} ${className}`;
 
   if (href) {
+    const isExternal =
+      external || href.startsWith("http") || href.startsWith("https");
     return (
-      <Link href={href} className={base}>
+      <Link
+        href={href}
+        className={classes}
+        {...(isExternal
+          ? { target: "_blank", rel: "noopener noreferrer" }
+          : {})}
+      >
         {label}
       </Link>
     );
   }
 
   return (
-    <button onClick={onClick} className={base}>
+    <button type="button" onClick={onClick} className={classes}>
       {label}
     </button>
   );
