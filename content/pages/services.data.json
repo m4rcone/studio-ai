@@ -1,83 +1,159 @@
 {
   "slug": "services",
   "meta": {
-    "title": "Ipsum",
-    "description": "Lorem ipsum dolor sit amet consectetur adipiscing elit sed do eiusmod tempor incididunt ut labore et dolore."
+    "title": "Services",
+    "description": "Explore Atlas Architecture services: residential and commercial architecture, interior design, renovation, lighting consulting, and construction management."
   },
   "sections": [
     {
-      "type": "hero",
-      "id": "hero-services",
+      "type": "page-header",
+      "id": "services-header",
       "data": {
-        "headline": "Dolor sit amet consectetur adipiscing elit",
-        "subheadline": "Ut enim ad minim veniam quis nostrud exercitation ullamco laboris nisi ut aliquip ex ea commodo consequat.",
-        "cta": {
-          "label": "Lorem ipsum",
-          "href": "/contact",
-          "style": "primary"
-        },
-        "image": {
-          "src": "/media/services-hero.svg",
-          "alt": "Lorem ipsum dolor sit amet consectetur adipiscing"
-        }
+        "eyebrow": "Services",
+        "title": "From brief to delivery with excellence",
+        "subtitle": "We offer a complete range of services so your project is developed with coherence — from concept to the final detail."
       }
     },
     {
-      "type": "features",
+      "type": "services-list",
       "id": "services-list",
       "data": {
-        "headline": "Lorem ipsum dolor sit amet",
-        "subheadline": "Consectetur adipiscing elit sed do eiusmod tempor incididunt ut labore et dolore magna aliqua.",
+        "eyebrow": "What we do",
+        "headline": "Services for every stage of your project",
+        "intro": "Every service is handled by the same lead architect from start to finish — ensuring creative continuity and a coherent final result. We do not outsource or fragment. Your project has one name and one face throughout.",
         "items": [
           {
-            "id": "lorem-ipsum",
-            "title": "Lorem Ipsum",
-            "description": "Ut enim ad minim veniam quis nostrud exercitation ullamco laboris nisi ut aliquip ex ea commodo consequat.",
-            "icon": "🎯"
+            "id": "svc-residential",
+            "number": "01",
+            "name": "Residential Architecture",
+            "description": "Full project development for houses and apartments, from feasibility study to detailed construction documents, with 3D visualization for approval before construction.",
+            "details": [
+              "Preliminary study",
+              "Design development",
+              "Construction documents",
+              "Project coordination"
+            ]
           },
           {
-            "id": "dolor-sit",
-            "title": "Dolor Sit",
-            "description": "Duis aute irure dolor in reprehenderit in voluptate velit esse cillum dolore eu fugiat nulla pariatur.",
-            "icon": "⚙️"
+            "id": "svc-commercial",
+            "number": "02",
+            "name": "Commercial Architecture",
+            "description": "Design for stores, restaurants, hotels, and retail spaces — focused on customer experience and brand identity, from floor plan to facade.",
+            "details": [
+              "Brand briefing",
+              "Space planning",
+              "Facade design",
+              "Signage"
+            ]
           },
           {
-            "id": "amet-consectetur",
-            "title": "Amet Consectetur",
-            "description": "Excepteur sint occaecat cupidatat non proident sunt in culpa qui officia deserunt mollit anim id est laborum.",
-            "icon": "🛡️"
+            "id": "svc-interiors",
+            "number": "03",
+            "name": "Interior Design",
+            "description": "Full curation of materials, furniture, lighting, and objects to create environments with personality, harmony, and visual comfort.",
+            "details": [
+              "Visual concept",
+              "Mood board",
+              "Material specification",
+              "Purchase coordination"
+            ]
           },
           {
-            "id": "adipiscing-elit",
-            "title": "Adipiscing Elit",
-            "description": "Sed ut perspiciatis unde omnis iste natus error sit voluptatem accusantium doloremque laudantium totam.",
-            "icon": "📚"
+            "id": "svc-renovation",
+            "number": "04",
+            "name": "Renovation & Retrofit",
+            "description": "Modernization of existing spaces with precise interventions that respect the structure and maximize results within the available budget.",
+            "details": [
+              "Technical diagnosis",
+              "Renovation design",
+              "Specifications",
+              "Cost estimation"
+            ]
           },
           {
-            "id": "sed-do",
-            "title": "Sed Do Eiusmod",
-            "description": "Nemo enim ipsam voluptatem quia voluptas sit aspernatur aut odit aut fugit sed quia consequuntur.",
-            "icon": "📊"
+            "id": "svc-lighting",
+            "number": "05",
+            "name": "Lighting Consulting",
+            "description": "Lighting design that enhances the architecture, sets intentional atmospheres, and meets functional needs with energy efficiency.",
+            "details": [
+              "Lighting plan",
+              "Fixture specification",
+              "Lighting scenes",
+              "Automation"
+            ]
           },
           {
-            "id": "tempor-incididunt",
-            "title": "Tempor Incididunt",
-            "description": "Neque porro quisquam est qui dolorem ipsum quia dolor sit amet consectetur adipisci velit sed quia.",
-            "icon": "⚡"
+            "id": "svc-management",
+            "number": "06",
+            "name": "Construction Management",
+            "description": "Periodic site supervision to ensure faithful execution of the design, quality control, and agile resolution of any on-site issues.",
+            "details": [
+              "Site visits",
+              "Progress reports",
+              "Contractor management",
+              "Phase approvals"
+            ]
+          }
+        ]
+      }
+    },
+    {
+      "type": "process-steps",
+      "id": "work-process",
+      "data": {
+        "eyebrow": "How we work",
+        "headline": "A clear process from start to finish",
+        "subtitle": "Every project follows well-defined stages, with transparent communication and your approval at each phase before moving forward.",
+        "steps": [
+          {
+            "id": "step-01",
+            "number": "01",
+            "title": "Brief",
+            "description": "Initial meeting to understand your needs, lifestyle, visual references, and available budget. The project starts here."
+          },
+          {
+            "id": "step-02",
+            "number": "02",
+            "title": "Preliminary Study",
+            "description": "First conceptual proposals in plan and perspective, establishing the architectural approach and visual language of the project."
+          },
+          {
+            "id": "step-03",
+            "number": "03",
+            "title": "3D Development",
+            "description": "Project refinement with material and furniture definition. Photorealistic 3D visualization for your full approval before any construction begins."
+          },
+          {
+            "id": "step-04",
+            "number": "04",
+            "title": "Construction Documents",
+            "description": "Complete technical documentation: plans, sections, elevations, details, and specifications for precise execution."
+          },
+          {
+            "id": "step-05",
+            "number": "05",
+            "title": "Permits & Approvals",
+            "description": "Processing with city hall and building management when required. Coordination with structural and MEP engineering."
+          },
+          {
+            "id": "step-06",
+            "number": "06",
+            "title": "Construction Management",
+            "description": "Periodic site visits to ensure faithful execution and resolve any unforeseen issues quickly and safely."
           }
         ]
       }
     },
     {
       "type": "cta",
-      "id": "cta-bottom",
+      "id": "services-cta",
       "data": {
-        "headline": "Lorem ipsum dolor sit amet consectetur?",
-        "text": "Adipiscing elit sed do eiusmod tempor incididunt ut labore et dolore magna aliqua ut enim.",
+        "headline": "Ready to start your project?",
+        "text": "Talk to an Atlas architect and discover how we can transform your space.",
         "cta": {
-          "label": "Lorem ipsum dolor",
-          "href": "/contact",
-          "style": "primary"
+          "label": "Request a Quote",
+          "href": "https://wa.me/5511987654321",
+          "style": "whatsapp"
         }
       }
     }

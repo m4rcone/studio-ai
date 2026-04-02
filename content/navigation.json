@@ -1,24 +1,25 @@
 {
   "header": {
     "links": [
-      { "label": "Lorem", "href": "/" },
-      { "label": "Ipsum", "href": "/services" },
-      { "label": "Dolor", "href": "/about" },
-      { "label": "Amet", "href": "/contact" }
+      { "label": "Home", "href": "/" },
+      { "label": "Portfolio", "href": "/portfolio" },
+      { "label": "Services", "href": "/services" },
+      { "label": "About", "href": "/about" },
+      { "label": "Contact", "href": "/contact" }
     ],
     "cta": {
-      "label": "Consectetur",
-      "href": "/contact",
+      "label": "Request a Quote",
+      "href": "https://wa.me/5511987654321",
       "style": "primary"
     }
   },
   "footer": {
     "links": [
-      { "label": "Lorem Policy", "href": "/privacy-policy" },
-      { "label": "Ipsum Terms", "href": "/terms-of-use" }
+      { "label": "Privacy Policy", "href": "/privacy" },
+      { "label": "Terms of Use", "href": "/terms" }
     ],
-    "copyright": "© 2026 Lorem Ipsum Co. All rights reserved.",
-    "contactLabel": "Lorem",
-    "socialLabel": "Ipsum"
+    "copyright": "© 2026 Atlas Architecture. All rights reserved.",
+    "contactLabel": "Contact",
+    "socialLabel": "Social Media"
   }
 }
