@@ -31,8 +31,8 @@ jobs:
         run: npm run build
         env:
           GITHUB_TOKEN: ${{ secrets.GH_CONTENT_TOKEN }}
-          GITHUB_OWNER: ${{ vars.GITHUB_OWNER }}
-          GITHUB_REPO: ${{ vars.GITHUB_REPO }}
+          GITHUB_OWNER: ${{ vars.GH_OWNER }}
+          GITHUB_REPO: ${{ vars.GH_REPO }}
           GITHUB_DEFAULT_BRANCH: main
           ANTHROPIC_API_KEY: placeholder-for-build
           STUDIO_USERS: ci:team
