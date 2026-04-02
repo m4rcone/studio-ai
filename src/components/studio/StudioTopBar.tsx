@@ -38,7 +38,7 @@ export function StudioTopBar({ brandName, username }: StudioTopBarProps) {
           </span>
           <button
             onClick={handleLogout}
-            className="text-primary-foreground/70 hover:text-primary-foreground border-primary-foreground/20 hover:border-primary-foreground/50 cursor-pointer rounded-[var(--radius)] border px-3 py-1.5 text-xs transition-colors"
+            className="text-primary-foreground/70 hover:text-primary-foreground border-primary-foreground/20 hover:border-primary-foreground/50 cursor-pointer rounded-(--radius) border px-3 py-1.5 text-xs transition-colors"
           >
             Sign out
           </button>
