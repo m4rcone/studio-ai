@@ -1,195 +1,99 @@
-# Convenções de Conteúdo
+# Content Conventions — Atlas Architecture
 
-Este documento explica como o conteúdo do site é organizado. Ele é usado por IAs e desenvolvedores para entender a estrutura e fazer edições corretas.
+This document explains how site content is organized. It is used by AI agents and developers to understand the structure and make correct edits.
 
 ---
 
-## Arquivos de conteúdo
+## Content files
 
 ### site.config.json
 
-Dados globais do site. Usado por Header, Footer, meta tags e como fonte dos design tokens.
+Global site data. Used by Header, Footer, meta tags, and as the source of design tokens.
 
 ```json
 {
   "brand": {
-    "name": "Nome da Empresa",
-    "tagline": "Slogan da empresa",
-    "logo": "/media/logo.svg"
+    "name": "Atlas Architecture",
+    "tagline": "We design spaces that tell your story",
+    "logo": "/media/atlas-logo.svg"
   },
   "theme": {
     "colors": {
-      "primary": "#2563eb",
+      "primary": "#1a1a1a",
       "primary-foreground": "#ffffff",
-      "secondary": "#f59e0b",
+      "secondary": "#c9a96e",
       "secondary-foreground": "#1a1a1a",
-      "background": "#ffffff",
+      "background": "#fafaf8",
       "foreground": "#1a1a1a",
-      "muted": "#f5f5f5",
-      "muted-foreground": "#737373"
+      "muted": "#f5f4f0",
+      "muted-foreground": "#6b6b6b"
     },
-    "fonts": {
-      "heading": "Inter",
-      "body": "Inter"
-    },
-    "borderRadius": "0.5rem"
+    "fonts": { "heading": "DM Serif Display", "body": "Inter" },
+    "borderRadius": "0.125rem"
   },
-  "contact": {
-    "phone": "(41) 9999-8888",
-    "whatsapp": "5541999998888",
-    "email": "contato@empresa.com",
-    "address": {
-      "street": "Rua Exemplo, 123",
-      "neighborhood": "Centro",
-      "city": "Curitiba",
-      "state": "PR",
-      "zip": "80000-000"
-    }
-  },
-  "social": {
-    "instagram": "https://instagram.com/empresa",
-    "facebook": "https://facebook.com/empresa",
-    "linkedin": null
-  },
-  "seo": {
-    "defaultTitle": "Empresa | Tagline",
-    "titleTemplate": "%s | Empresa",
-    "defaultDescription": "Descrição padrão para SEO."
-  }
+  "contact": { "phone": "(11) 3456-7890", "whatsapp": "5511987654321", ... },
+  "social": { "instagram": "https://instagram.com/atlasarquitetura", "facebook": null, "linkedin": "..." },
+  "seo": { "defaultTitle": "...", "titleTemplate": "%s | Atlas Architecture", "defaultDescription": "..." }
 }
 ```
 
 ### navigation.json
 
-Estrutura de menus do site.
-
-```json
-{
-  "header": {
-    "links": [
-      { "label": "Início", "href": "/" },
-      { "label": "Serviços", "href": "/servicos" },
-      { "label": "Sobre", "href": "/sobre" },
-      { "label": "Contato", "href": "/contato" }
-    ],
-    "cta": {
-      "label": "Agende agora",
-      "href": "/contato",
-      "style": "primary"
-    }
-  },
-  "footer": {
-    "links": [
-      { "label": "Política de Privacidade", "href": "/privacidade" },
-      { "label": "Termos de Uso", "href": "/termos" }
-    ],
-    "copyright": "© 2025 Empresa. Todos os direitos reservados."
-  }
-}
-```
+Menu structure: Home, Portfolio, Services, About, Contact. CTA directs to WhatsApp.
 
 ### pages/[slug].data.json
 
-Cada página tem um arquivo de dados com esta estrutura:
+Each page has a data file with this structure:
 
 ```json
 {
   "slug": "home",
-  "meta": {
-    "title": "Título da página para SEO",
-    "description": "Descrição da página para SEO."
-  },
+  "meta": { "title": "Home", "description": "..." },
   "sections": [
-    {
-      "type": "hero",
-      "id": "hero-principal",
-      "data": {}
-    },
-    {
-      "type": "features",
-      "id": "servicos-destaque",
-      "data": {}
-    }
+    { "type": "hero", "id": "main-hero", "data": {} },
+    { "type": "stats", "id": "office-stats", "data": {} }
   ]
 }
 ```
 
-Campos:
-
-- `slug` — identificador da página, usado na URL (exceto "home" que vira `/`)
-- `meta` — dados de SEO específicos da página
-- `sections` — array ordenado de seções que compõem a página
-- `sections[].type` — define qual componente renderiza essa seção
-- `sections[].id` — identificador único da seção (kebab-case descritivo)
-- `sections[].data` — dados passados como props ao componente
-
-A **ordem das seções** no array define a **ordem na página**. Para reordenar seções, basta mover os objetos no array.
-
-### pages/[slug].mdx (opcional)
-
-Usado quando uma página tem conteúdo textual longo — como uma página "Sobre" com vários parágrafos. O MDX permite formatação rica (negrito, links, listas) de forma natural.
-
-O `.mdx` complementa o `.data.json` da mesma página. Dados estruturados (seções, CTAs) ficam no JSON; texto corrido fica no MDX.
+The **order of sections** in the array defines the **render order on the page**.
 
 ### media/manifest.json
 
-Registro de todas as imagens usadas no site.
-
-```json
-{
-  "images": [
-    {
-      "src": "/media/hero-clinica.webp",
-      "alt": "Interior moderno da clínica",
-      "width": 1920,
-      "height": 1080,
-      "usedIn": ["home.data.json"]
-    }
-  ]
-}
-```
+Registry of all images used on the site. Images are SVG placeholders — replace with real photos when available.
 
 ---
 
-## Tipos de seção disponíveis
+## Available section types
 
-| Tipo       | Descrição                                                                       | Interface TypeScript                                     | Props obrigatórias         |
-| ---------- | ------------------------------------------------------------------------------- | -------------------------------------------------------- | -------------------------- |
-| `hero`     | Topo da página: título grande, subtítulo opcional, botão CTA e imagem lateral   | `src/components/sections/Hero.tsx` → `HeroProps`         | `headline`, `cta`, `image` |
-| `features` | Grade de cards apresentando serviços ou diferenciais, com ícone, título e texto | `src/components/sections/Features.tsx` → `FeaturesProps` | `headline`, `items`        |
-| `cta`      | Faixa de conversão com fundo `bg-primary`, título, texto opcional e botão       | `src/components/sections/Cta.tsx` → `CtaProps`           | `headline`, `cta`          |
-
-### Notas de uso
-
-**`hero`**
-
-- Use no topo de qualquer página como primeira seção
-- `cta.style` aceita `"primary"`, `"secondary"` ou `"whatsapp"`
-- `image.src` deve começar com `/media/` e apontar para um arquivo em `public/media/`
-- Imagens SVG são suportadas (usadas nos placeholders)
-
-**`features`**
-
-- Máximo de 9 itens; grade se adapta: 1 col (mobile) → 2 col (sm) → 3 col (lg)
-- `items[].icon` é opcional — use emoji para ícones decorativos
-- `items[].id` deve ser único dentro da lista e em kebab-case
-
-**`cta`**
-
-- Fundo sempre `bg-primary`; prefira `style: "primary"` no botão para contraste (fundo branco sobre azul)
-- Use como última seção da página para converter visitantes
+| Type                | Component                                      | Description                                                                | Required props                                                |
+| ------------------- | ---------------------------------------------- | -------------------------------------------------------------------------- | ------------------------------------------------------------- |
+| `hero`              | `src/components/sections/Hero.tsx`             | Split layout: text (left) + large image (right). Used at the top of pages. | `headline`, `cta`, `image`                                    |
+| `stats`             | `src/components/sections/Stats.tsx`            | Dark horizontal strip with large numbers in gold.                          | `items` (array of `value` + `label`)                          |
+| `page-header`       | `src/components/sections/PageHeader.tsx`       | Inner-page banner: centered title, gold accent line, optional subtitle.    | `title`                                                       |
+| `portfolio-preview` | `src/components/sections/PortfolioPreview.tsx` | Asymmetric grid with 3–4 featured projects for the home page.              | `eyebrow`, `headline`, `viewAllLabel`, `viewAllHref`, `items` |
+| `testimonials`      | `src/components/sections/Testimonials.tsx`     | Grid of quote cards with decorative quotation marks and a gold divider.    | `eyebrow`, `headline`, `items`                                |
+| `features`          | `src/components/sections/Features.tsx`         | Generic card grid with optional emoji icon, title, and description.        | `headline`, `items`                                           |
+| `philosophy`        | `src/components/sections/Philosophy.tsx`       | Split heading/body + 4-column values grid. Used on the About page.         | `eyebrow`, `headline`, `body`, `values`                       |
+| `team`              | `src/components/sections/Team.tsx`             | Team member photos and bios in a 2-column grid.                            | `eyebrow`, `headline`, `members`                              |
+| `timeline`          | `src/components/sections/Timeline.tsx`         | Alternating timeline with year nodes in dark background and gold text.     | `eyebrow`, `headline`, `events`                               |
+| `portfolio-gallery` | `src/components/sections/PortfolioGallery.tsx` | Filterable gallery by category (residential / commercial / corporate).     | `allLabel`, `projects`                                        |
+| `services-list`     | `src/components/sections/ServicesList.tsx`     | Numbered service list with name, description, and optional detail bullets. | `eyebrow`, `headline`, `items`                                |
+| `process-steps`     | `src/components/sections/ProcessSteps.tsx`     | Numbered process step cards on a dark background.                          | `eyebrow`, `headline`, `steps`                                |
+| `contact-section`   | `src/components/sections/ContactSection.tsx`   | Quote form + contact info + WhatsApp button (client component).            | All fields in `ContactSectionProps`                           |
+| `cta`               | `src/components/sections/Cta.tsx`              | Dark conversion banner with large headline, optional text, and button.     | `headline`, `cta`                                             |
 
 ---
 
-## Relação entre arquivos
+## File relationships
 
 ```
-site.config.json ──→ Header, Footer, Tailwind tokens, meta tags globais
-navigation.json ───→ Header (menu), Footer (links)
-pages/*.data.json ─→ Conteúdo de cada página (seções)
-pages/*.mdx ───────→ Texto longo de páginas específicas
-media/manifest.json → Registro e metadata de imagens
-src/types/content.ts → Interfaces TypeScript (fonte de verdade da estrutura)
+site.config.json ──→ Header, Footer, Tailwind tokens, global meta tags
+navigation.json ───→ Header (menu + CTA), Footer (links + labels)
+pages/*.data.json ─→ Content of each page (section array)
+media/manifest.json → Image registry and metadata
+src/types/content.ts → TypeScript interfaces (source of truth for data structure)
+src/lib/section-registry.ts → Maps section type → React component
 ```
 
-> **Nota:** Os tipos TypeScript com comentários JSDoc nos componentes e em `src/types/content.ts` são a fonte de verdade da estrutura dos dados. Para entender quais campos são aceitos em uma seção, leia a interface do componente correspondente em `src/components/sections/`.
+> **Note:** TypeScript interfaces with JSDoc comments in `src/components/sections/` and `src/types/content.ts` are the authoritative source of data structure. To understand which fields a section accepts, read the interface of the corresponding component.

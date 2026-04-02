@@ -16,7 +16,8 @@ O projeto segue uma separação rígida entre **estrutura visual** (componentes)
 npm run dev            # Inicia o servidor de desenvolvimento Next.js (localhost:3000)
 npm run build          # Gera o bundle de produção
 npm run start          # Inicia o servidor de produção
-npm run generate-theme # Regenera src/app/theme.generated.css a partir do site.config.json
+npm run generate-theme   # Regenera src/app/theme.generated.css a partir do site.config.json
+npm run generate-favicon # Regenera src/app/favicon.ico a partir das cores do site.config.json
 npm run lint           # Executa o ESLint
 npm run lint:fix       # Executa o ESLint com correção automática
 npm run format         # Formata todos os arquivos com Prettier
@@ -199,10 +200,12 @@ Após criar o componente, adicione o reexporte em `src/types/content.ts` e inclu
 ### 7. Imagens
 
 - Imagens ficam em `public/media/` com nomes descritivos em kebab-case
-- Referências no JSON usam o path relativo: `"/media/hero-clinica.webp"`
+- Referências no JSON usam o path relativo: `"/media/hero-project.webp"`
 - Toda imagem OBRIGATORIAMENTE tem `alt` descritivo no JSON
-- Formatos preferidos: `.webp` para fotos, `.svg` para ícones/logos
+- Formatos preferidos: `.webp` para fotos, `.svg` para ícones/logos e placeholders
 - O arquivo `content/media/manifest.json` registra todas as imagens com metadata
+
+**Placeholders SVG:** Durante a criação do site, crie arquivos `.svg` em `public/media/` para cada imagem que o site precisará. Use nomes definitivos em kebab-case (ex: `project-higienopolis-house.svg`). Quando as fotos reais chegarem, substitua os SVGs mantendo o mesmo nome de arquivo — assim o JSON não precisa ser atualizado. Os SVGs de placeholder devem usar a paleta do cliente, mostrar um ícone descritivo e um label identificando o conteúdo esperado.
 
 ---
 
@@ -211,18 +214,24 @@ Após criar o componente, adicione o reexporte em `src/types/content.ts` e inclu
 1. Ler o briefing do cliente (fornecido como contexto)
 2. Substituir os dados placeholder em `content/site.config.json` (marca, cores, contato)
 3. Rodar `npm run generate-theme` para regenerar `src/app/theme.generated.css` com as cores do cliente
-4. Criar os componentes visuais em `src/components/sections/` com design único — garantindo que a interface de props de cada componente tenha comentários JSDoc descritivos em inglês em todos os campos
-5. Criar os componentes de layout (Header, Footer) em `src/components/layout/`
-6. Criar os componentes base necessários em `src/components/ui/`
-7. Popular os arquivos em `content/pages/` com dados reais do cliente
-8. Criar `content/navigation.json` com a estrutura de menus
-9. Adicionar reexporte de cada novo tipo de seção em `src/types/content.ts` e incluir no union `SectionData`
-10. Implementar `src/lib/content.ts` (leitura de JSON/MDX)
-11. Implementar `src/lib/section-registry.ts` (mapeamento type → componente)
-12. Criar as rotas em `src/app/` (home + páginas dinâmicas)
-13. Atualizar `ai/CONVENTIONS.md` com a estrutura específica deste site
-14. Atualizar `ai/EDITING_GUIDE.md` com regras específicas deste site
-15. Rodar `npm run build` para confirmar que o build passa sem erros
+4. Atualizar `src/app/layout.tsx` para importar as fontes corretas via `next/font/google`
+5. **Criar SVGs de placeholder** em `public/media/` para todas as imagens que o site precisará — antes de escrever o conteúdo JSON, para que os paths já existam e possam ser referenciados imediatamente
+6. **Atualizar `content/media/manifest.json`** com todas as imagens criadas no passo anterior, incluindo `src`, `alt`, `width`, `height` e `usedIn` corretos
+7. Criar os componentes visuais em `src/components/sections/` com design único — garantindo que a interface de props de cada componente tenha comentários JSDoc descritivos em inglês em todos os campos
+8. Criar os componentes de layout (Header, Footer) em `src/components/layout/`
+9. Criar os componentes base necessários em `src/components/ui/`
+10. Popular os arquivos em `content/pages/` com dados reais do cliente, referenciando os paths `.svg` dos placeholders
+11. Criar `content/navigation.json` com a estrutura de menus
+12. Adicionar reexporte de cada novo tipo de seção em `src/types/content.ts` e incluir no union `SectionData`
+13. Implementar `src/lib/content.ts` (leitura de JSON/MDX)
+14. Implementar `src/lib/section-registry.ts` (mapeamento type → componente)
+15. Criar as rotas em `src/app/` (home + páginas dinâmicas)
+16. Atualizar `ai/CONVENTIONS.md` com a estrutura específica deste site
+17. Atualizar `ai/EDITING_GUIDE.md` com regras específicas deste site
+18. Usar a skill `web-design-guidelines` para revisar UI/acessibilidade dos componentes criados
+19. Usar a skill `vercel-react-best-practices` para revisar performance dos componentes React/Next.js
+20. Rodar `npm run build` para confirmar que o build passa sem erros
+21. Usar a skill `deploy-to-vercel` para fazer o deploy de preview na Vercel
 
 ---
 
@@ -251,7 +260,9 @@ Após criar o componente, adicione o reexporte em `src/types/content.ts` e inclu
 
 Este projeto usa Claude Code Agent Skills (`.agents/skills/`, com symlink em `.claude/skills/`):
 
-- `deploy-to-vercel` — Deploy na Vercel
-- `vercel-react-best-practices` — Padrões de performance React/Next.js
-- `vercel-composition-patterns` — Padrões de composição React
-- `web-design-guidelines` — Revisão de UI/acessibilidade
+- `deploy-to-vercel` — Deploy na Vercel. Usar ao final do workflow de criação de novo site e sempre que o usuário pedir deploy.
+- `vercel-react-best-practices` — Padrões de performance React/Next.js. Usar após criar ou refatorar componentes.
+- `vercel-composition-patterns` — Padrões de composição React. Usar ao projetar APIs de componentes reutilizáveis.
+- `web-design-guidelines` — Revisão de UI/acessibilidade. Usar após criar todos os componentes visuais de um novo design.
+
+**Regra:** Ao gerar um novo design completo, sempre executar `web-design-guidelines` e `vercel-react-best-practices` antes do deploy.

@@ -1,156 +1,161 @@
-# Guia de Edição de Conteúdo
+# Content Editing Guide — Atlas Architecture
 
-Este documento contém as regras e procedimentos para edição de conteúdo do site via IA.
-
----
-
-## Princípios gerais
-
-1. **Só edite arquivos em `content/`** — nunca modifique componentes, tipos TypeScript, código ou configurações
-2. **Confirme a estrutura pela interface TypeScript** — antes de editar, leia a interface do componente correspondente em `src/components/sections/` para entender quais campos são válidos, suas restrições (máx. de caracteres, valores permitidos) e quais são obrigatórios
-3. **Nunca invente conteúdo** — se a solicitação é ambígua, peça esclarecimento
-4. **Preserve a consistência** — ao adicionar itens a listas, siga o padrão dos itens existentes
-5. **Confirme antes de aplicar** — mostre o que vai mudar (antes/depois) e peça confirmação
+Rules and procedures for editing site content via AI.
 
 ---
 
-## O que pode ser editado
+## General principles
 
-### Textos
+1. **Only edit files in `content/`** — never modify components, TypeScript types, code, or configuration
+2. **Verify structure from TypeScript interfaces** — before editing, read the component interface in `src/components/sections/` to understand valid fields, constraints, and required props
+3. **Never invent content** — if a request is ambiguous, ask for clarification
+4. **Preserve consistency** — when adding items to lists, follow the pattern of existing items
+5. **Show before applying** — present the before/after diff and confirm before making changes
 
-- Títulos, subtítulos, descrições, parágrafos
-- Labels de botões e CTAs
-- Textos de depoimentos, nomes de autores
-- Itens de lista (serviços, funcionalidades)
-- Texto de copyright, taglines
+---
 
-### Dados de contato
+## What can be edited
 
-- Telefone, WhatsApp, email
-- Endereço (rua, bairro, cidade, estado, CEP)
-- Links de redes sociais
+### Text
 
-### Imagens
+- Titles, subtitles, descriptions, paragraphs
+- Button and CTA labels
+- Testimonial quotes and author names
+- List items (services, steps, projects, events)
+- Copyright text, taglines, partner bios
 
-- Substituir imagens existentes (requer upload da nova imagem)
-- Atualizar textos alternativos (alt)
-- Atualizar metadata no manifest
+### Contact data
 
-### Estrutura de conteúdo
+- Phone, WhatsApp, email
+- Address (street, neighborhood, city, state, zip)
+- Social media links (instagram, linkedin; facebook is null = hidden)
 
-- Adicionar/remover itens em listas existentes (ex: novo depoimento, novo serviço)
-- Reordenar itens dentro de listas
-- Reordenar seções dentro de uma página
+### Images
+
+- Replace existing images (requires uploading the real file to `public/media/`)
+- Update alt text
+- Update metadata in `content/media/manifest.json`
+
+### Content structure
+
+- Add/remove items in lists (e.g. new testimonial, new portfolio project, new service)
+- Reorder items within lists
+- Reorder sections within a page
 
 ### SEO
 
-- Títulos e descrições de páginas
-- Título e descrição padrão do site
+- Page titles and descriptions in each page's `meta.title` and `meta.description`
 
-### Navegação
+### Navigation
 
-- Labels e links do menu
-- Texto e link do CTA do header
-- Links do footer
+- Menu labels and links in `navigation.json`
 
 ---
 
-## O que NÃO pode ser editado (perfil cliente)
+## What cannot be edited (requires a developer)
 
-- Criar novas páginas
-- Adicionar novos tipos de seção
-- Modificar componentes, tipos TypeScript ou código
-- Alterar design tokens (cores, fontes) — encaminhar para a equipe
-- Remover páginas inteiras
-
----
-
-## Procedimento de edição
-
-### Para editar um campo de texto:
-
-1. Identifique em qual arquivo o campo está:
-   - Dados globais → `site.config.json`
-   - Menu → `navigation.json`
-   - Conteúdo de página → `pages/[slug].data.json`
-
-2. Leia a interface TypeScript do componente correspondente em `src/components/sections/` (ou `src/types/content.ts` para estruturas globais) para confirmar os campos válidos, restrições e tipos
-
-3. Localize o campo exato usando o `id` da seção e o nome do campo
-
-4. Aplique a alteração respeitando:
-   - Limites de caracteres indicados nos comentários JSDoc da interface
-   - Valores permitidos nos union types (ex: `"primary" | "secondary" | "whatsapp"`)
-   - Campos sem `?` são obrigatórios e não podem ser removidos
-   - Tipo do campo (string, number, array, object)
-
-### Para adicionar um item a uma lista:
-
-1. Leia os itens existentes para entender o padrão
-2. Leia a interface do componente para ver quais campos são obrigatórios
-3. Crie o novo item seguindo a mesma estrutura com todos os campos obrigatórios
-4. Posicione o item na ordem desejada no array
-
-### Para reordenar seções:
-
-1. Leia o array `sections` da página
-2. Mova o objeto da seção para a posição desejada
-3. Não altere o conteúdo das seções, apenas a ordem
-
-### Para atualizar uma imagem:
-
-1. Receba o arquivo de imagem do solicitante
-2. Salve em `public/media/` com nome descritivo em kebab-case
-3. Atualize a referência no JSON (campo `src`)
-4. Atualize o `alt` se necessário
-5. Atualize `content/media/manifest.json`
+- Creating new pages
+- Adding new section types
+- Modifying components, TypeScript types, or code
+- Changing design tokens (colors, fonts) — requires running `npm run generate-theme` after editing `site.config.json`
+- Removing entire pages
 
 ---
 
-## Exemplos de solicitações e como resolver
+## Editing procedure
 
-| Solicitação                      | Arquivo                    | Campo                                           |
-| -------------------------------- | -------------------------- | ----------------------------------------------- |
-| "Muda o telefone"                | `site.config.json`         | `contact.phone`                                 |
-| "Troca o título do topo da home" | `pages/home.data.json`     | `sections[type=hero].data.headline`             |
-| "Adiciona um novo depoimento"    | `pages/home.data.json`     | `sections[type=testimonials].data.items` (push) |
-| "Muda o link do Instagram"       | `site.config.json`         | `social.instagram`                              |
-| "Reordena os serviços"           | `pages/servicos.data.json` | `sections[type=features].data.items` (reorder)  |
-| "Muda o texto do botão do menu"  | `navigation.json`          | `header.cta.label`                              |
+### To edit a text field:
+
+1. Identify which file contains the field:
+   - Global data → `site.config.json`
+   - Navigation → `navigation.json`
+   - Page content → `pages/[slug].data.json`
+
+2. Read the TypeScript interface of the corresponding component in `src/components/sections/` (or `src/types/content.ts` for global structures) to confirm valid fields, constraints, and types
+
+3. Locate the exact field using the section `id` and field name
+
+4. Apply the change respecting:
+   - Character limits in JSDoc comments
+   - Union type allowed values (e.g. `"primary" | "secondary" | "whatsapp" | "outline"`)
+   - Fields without `?` are required and cannot be removed
+
+### To add an item to a list:
+
+1. Read existing items to understand the pattern
+2. Read the component interface for required fields
+3. Create the new item following the same structure
+4. Position it at the desired index in the array
 
 ---
 
-## Notas específicas deste site
+## Common edit examples
 
-Este é o **template base** do sistema content-driven. Não há cliente real — os dados em `content/` são placeholders genéricos. As notas abaixo descrevem o comportamento atual do template.
+| Request                           | File                        | Field                                                             |
+| --------------------------------- | --------------------------- | ----------------------------------------------------------------- |
+| "Change the phone number"         | `site.config.json`          | `contact.phone`                                                   |
+| "Update the hero headline"        | `pages/home.data.json`      | `sections[id=main-hero].data.headline`                            |
+| "Add a new testimonial"           | `pages/home.data.json`      | `sections[id=client-testimonials].data.items`                     |
+| "Add a project to the portfolio"  | `pages/portfolio.data.json` | `sections[id=projects-gallery].data.projects`                     |
+| "Change the Instagram link"       | `site.config.json`          | `social.instagram`                                                |
+| "Reorder the services"            | `pages/services.data.json`  | `sections[id=services-list].data.items`                           |
+| "Change the menu CTA button text" | `navigation.json`           | `header.cta.label`                                                |
+| "Update Ana Beatriz's bio"        | `pages/about.data.json`     | `sections[id=founding-partners].data.members[id=partner-ana].bio` |
+| "Add a milestone to the timeline" | `pages/about.data.json`     | `sections[id=studio-history].data.events`                         |
 
-### Páginas existentes
+---
 
-| Slug        | Arquivo                            | Seções                                |
-| ----------- | ---------------------------------- | ------------------------------------- |
-| `/`         | `content/pages/home.data.json`     | `hero`                                |
-| `/servicos` | `content/pages/servicos.data.json` | `hero` → `features` (6 itens) → `cta` |
+## Site-specific notes
 
-### Imagens placeholder
+### Client
 
-As imagens em `public/media/` são SVGs gerados como placeholders visuais:
+**Atlas Architecture** (Atlas Arquitetura) — Architecture and interior design studio in São Paulo, Brazil.
 
-| Arquivo                | Uso                        | Substitua por        |
-| ---------------------- | -------------------------- | -------------------- |
-| `logo.svg`             | Logo no Header             | Logo real do cliente |
-| `hero-placeholder.svg` | Hero da home               | Foto real do cliente |
-| `servicos-hero.svg`    | Hero da página de serviços | Foto real do cliente |
+- Segments: high-end residential + commercial/corporate
+- Target audience: upper-middle to high income, ages 30–55
+- Tone: sophisticated, contemporary, professional but accessible
+- Instagram is the primary acquisition channel
+- Primary CTA always directs to WhatsApp: `https://wa.me/5511987654321`
 
-Para substituir: salve a nova imagem em `public/media/`, atualize `src` e `alt` no JSON da seção, e registre em `content/media/manifest.json`.
+### Pages
 
-### Design tokens
+| Slug         | File                                | Sections                                                        |
+| ------------ | ----------------------------------- | --------------------------------------------------------------- |
+| `/`          | `content/pages/home.data.json`      | `hero` → `stats` → `portfolio-preview` → `testimonials` → `cta` |
+| `/about`     | `content/pages/about.data.json`     | `page-header` → `philosophy` → `team` → `timeline`              |
+| `/portfolio` | `content/pages/portfolio.data.json` | `page-header` → `portfolio-gallery`                             |
+| `/services`  | `content/pages/services.data.json`  | `page-header` → `services-list` → `process-steps` → `cta`       |
+| `/contact`   | `content/pages/contact.data.json`   | `page-header` → `contact-section`                               |
 
-As cores e fontes atuais são genéricas (azul `#2563eb`, amarelo `#f59e0b`, fonte Inter). Para personalizar um cliente, edite apenas `content/site.config.json` → campo `theme`. O CSS é regenerado automaticamente no próximo `npm run dev` ou `npm run build`.
+### Portfolio categories
 
-### WhatsApp
+Accepted values for project `category`: `"residential"` | `"commercial"` | `"corporate"`.
+These are hardcoded as display labels in `PortfolioGallery.tsx` and `PortfolioPreview.tsx`. Do not use other values.
 
-O campo `contact.whatsapp` em `site.config.json` deve estar no formato internacional sem espaços nem símbolos: `5541999998888` (55 = Brasil, 41 = DDD, número). O botão CTA com `style: "whatsapp"` usa este número automaticamente se o `href` for montado como `https://wa.me/{whatsapp}`.
+### WhatsApp format
 
-### Verificação após edição
+The `contact.whatsapp` field in `site.config.json` must be in international format without spaces or symbols: `5511987654321` (55 = Brazil, 11 = area code, number). The CTA button uses the URL `https://wa.me/5511987654321` directly in `navigation.json`.
 
-Após editar o conteúdo, verifique que o JSON resultante está sintaticamente correto (sem erros de vírgula, aspas, etc.) e que respeita a estrutura da interface TypeScript do componente correspondente. Use um linter de JSON ou o próprio TypeScript para detectar inconsistências.
+### Color palette
+
+| Token        | Hex       | Used for                                                          |
+| ------------ | --------- | ----------------------------------------------------------------- |
+| `primary`    | `#1a1a1a` | Dark section backgrounds (stats, process-steps, cta, footer)      |
+| `secondary`  | `#c9a96e` | Gold accents, stat numbers, decorative lines, hover states        |
+| `background` | `#fafaf8` | Warm white general background                                     |
+| `muted`      | `#f5f4f0` | Alternating section backgrounds (testimonials, page-header, form) |
+
+### Images
+
+All image paths in `content/pages/*.data.json` reference `.svg` placeholder files in `public/media/`. These are descriptive placeholders — they must be replaced with real project photos when the client provides them.
+
+**To replace an image:**
+
+1. Save the real image in `public/media/` using the same filename (e.g. `project-higienopolis-house.webp`)
+2. Update the `src` field in the relevant JSON (e.g. change `.svg` → `.webp`)
+3. Update the `alt` text if needed
+4. Update `content/media/manifest.json`
+
+### Validation after editing
+
+After editing content, verify the JSON is syntactically correct (no stray commas or quotes) and that it respects the TypeScript interface of the corresponding component. The build (`npm run build`) will catch type mismatches.
