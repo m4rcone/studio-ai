@@ -2,22 +2,85 @@
 // Each section's types live alongside the component that consumes them.
 // They are centralized here for convenient imports and to compose SectionData.
 
-export type { HeroProps, HeroCta, HeroImage } from "@/components/sections/Hero";
+export type { HeroProps } from "@/components/sections/Hero";
 export type {
   FeaturesProps,
   FeaturesItem,
 } from "@/components/sections/Features";
-export type { CtaProps, CtaButton } from "@/components/sections/Cta";
+export type { CtaProps } from "@/components/sections/Cta";
+export type { StatsProps, StatItem } from "@/components/sections/Stats";
+export type { PageHeaderProps } from "@/components/sections/PageHeader";
+export type {
+  PortfolioPreviewProps,
+  PortfolioPreviewItem,
+} from "@/components/sections/PortfolioPreview";
+export type {
+  TestimonialsProps,
+  TestimonialItem,
+} from "@/components/sections/Testimonials";
+export type { TeamProps, TeamMember } from "@/components/sections/Team";
+export type {
+  TimelineProps,
+  TimelineEvent,
+} from "@/components/sections/Timeline";
+export type {
+  PhilosophyProps,
+  PhilosophyValue,
+} from "@/components/sections/Philosophy";
+export type {
+  ServicesListProps,
+  ServiceItem,
+} from "@/components/sections/ServicesList";
+export type {
+  ProcessStepsProps,
+  ProcessStep,
+} from "@/components/sections/ProcessSteps";
+export type {
+  PortfolioGalleryProps,
+  GalleryProject,
+} from "@/components/sections/PortfolioGallery";
+export type {
+  ContactSectionProps,
+  ContactField,
+} from "@/components/sections/ContactSection";
+export type { ProjectDetailProps } from "@/components/sections/ProjectDetail";
 
 import type { HeroProps } from "@/components/sections/Hero";
 import type { FeaturesProps } from "@/components/sections/Features";
 import type { CtaProps } from "@/components/sections/Cta";
+import type { StatsProps } from "@/components/sections/Stats";
+import type { PageHeaderProps } from "@/components/sections/PageHeader";
+import type { PortfolioPreviewProps } from "@/components/sections/PortfolioPreview";
+import type { TestimonialsProps } from "@/components/sections/Testimonials";
+import type { TeamProps } from "@/components/sections/Team";
+import type { TimelineProps } from "@/components/sections/Timeline";
+import type { PhilosophyProps } from "@/components/sections/Philosophy";
+import type { ServicesListProps } from "@/components/sections/ServicesList";
+import type { ProcessStepsProps } from "@/components/sections/ProcessSteps";
+import type { PortfolioGalleryProps } from "@/components/sections/PortfolioGallery";
+import type { ContactSectionProps } from "@/components/sections/ContactSection";
+import type { ProjectDetailProps } from "@/components/sections/ProjectDetail";
 
 /**
  * Union of all available section data types.
  * Add new types here when creating new section components.
  */
-export type SectionData = HeroProps | FeaturesProps | CtaProps;
+export type SectionData =
+  | HeroProps
+  | FeaturesProps
+  | CtaProps
+  | StatsProps
+  | PageHeaderProps
+  | PortfolioPreviewProps
+  | TestimonialsProps
+  | TeamProps
+  | TimelineProps
+  | PhilosophyProps
+  | ServicesListProps
+  | ProcessStepsProps
+  | PortfolioGalleryProps
+  | ContactSectionProps
+  | ProjectDetailProps;
 
 // ─── Shared interfaces ─────────────────────────────────────────────────────────
 
