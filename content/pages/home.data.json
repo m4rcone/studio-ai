@@ -21,7 +21,7 @@
           "href": "/portfolio"
         },
         "image": {
-          "src": "https://scandiweb.com/blog/wp-content/uploads/2021/09/hero-banner-types-examples.jpg",
+          "src": "/media/hero-main.svg",
           "alt": "Contemporary living room designed by Atlas Architecture"
         }
       }
