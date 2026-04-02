@@ -256,6 +256,55 @@ Após criar o componente, adicione o reexporte em `src/types/content.ts` e inclu
 
 ---
 
+## Studio AI (/studio-ai)
+
+The site includes an embedded AI-powered content editing studio at `/studio-ai`.
+
+### Architecture
+
+- Authentication: email + password via JWT (configured in `.env.local`)
+- AI Agent: uses Anthropic API (Claude) with tools to read/edit content files
+- Edit flow: all changes go to a preview branch → client approves → merge to main → auto-deploy
+- The studio UI inherits the site's design tokens (colors, fonts, border-radius)
+
+### Key files
+
+- `src/lib/studio/` — all studio backend logic
+  - `agent.ts` — AI orchestration (streaming tool loop)
+  - `github.ts` — GitHub API wrapper (read, commit, branch, merge)
+  - `session.ts` — edit session management (in-memory, one per user)
+  - `tools.ts` — AI tool definitions (Anthropic API format)
+  - `tool-handlers.ts` — tool execution (file reads, JSON edits, GitHub commits)
+  - `system-prompt.ts` — builds the AI's context (reads ai/CONVENTIONS.md and ai/EDITING_GUIDE.md)
+  - `auth.ts` — JWT authentication helpers
+  - `use-chat.ts` — streaming response reader for the chat UI
+- `src/components/studio/` — studio UI components
+- `src/app/(studio)/` — studio pages (route group, does not affect public URLs)
+- `src/app/api/studio/` — studio API routes
+
+### Environment variables required
+
+See `.env.local`. Required vars:
+
+- `ANTHROPIC_API_KEY` — for the AI agent
+- `GITHUB_TOKEN` — for reading/writing content via GitHub API
+- `GITHUB_OWNER`, `GITHUB_REPO` — repository coordinates
+- `GITHUB_DEFAULT_BRANCH` — default branch (defaults to `main`)
+- `VERCEL_PROJECT_NAME` — for generating preview URLs
+- `STUDIO_USERS` — comma-separated `email:role` pairs (roles: `client` | `team`)
+- `STUDIO_PASSWORD` — shared access password for all studio users
+- `AUTH_SECRET` — JWT signing secret (keep long and random)
+
+### When modifying the studio
+
+- Do not change the public site components or routes
+- Tool definitions in `tools.ts` must match the handlers in `tool-handlers.ts`
+- The system prompt reads `ai/CONVENTIONS.md` and `ai/EDITING_GUIDE.md` at runtime (cached 5 min) — keep these up to date
+- Session state is in-memory — it resets on server restart (acceptable for MVP)
+- The studio uses route group `(studio)` — URLs start with `/studio-ai`, middleware protects all routes except `/studio-ai/login` and `/api/studio/auth`
+
+---
+
 ## Skills do agente
 
 Este projeto usa Claude Code Agent Skills (`.agents/skills/`, com symlink em `.claude/skills/`):

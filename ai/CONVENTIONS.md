@@ -97,3 +97,9 @@ src/lib/section-registry.ts → Maps section type → React component
 ```
 
 > **Note:** TypeScript interfaces with JSDoc comments in `src/components/sections/` and `src/types/content.ts` are the authoritative source of data structure. To understand which fields a section accepts, read the interface of the corresponding component.
+
+---
+
+## Studio AI
+
+This site includes an AI editing studio at `/studio-ai`. The studio reads this file (`CONVENTIONS.md`) and the `EDITING_GUIDE.md` to understand the site structure. When updating these files, keep in mind that the AI agent uses them as context for editing operations.

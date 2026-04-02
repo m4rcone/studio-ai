@@ -16,6 +16,10 @@ Rules and procedures for editing site content via AI.
 
 ## What can be edited
 
+### Via Studio AI Chat
+
+All content edits listed below can be performed through the AI chat at `/studio-ai/chat`. The AI creates a preview branch for each editing session, allowing changes to be reviewed before publishing.
+
 ### Text
 
 - Titles, subtitles, descriptions, paragraphs
