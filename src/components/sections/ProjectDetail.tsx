@@ -1,0 +1,92 @@
+import Image from "next/image";
+import Link from "next/link";
+
+export interface ProjectDetailProps {
+  /** Project name. Max ~60 characters. */
+  name: string;
+  /** City and state. E.g. "São Paulo, SP". */
+  location: string;
+  /** Year the project was completed. E.g. "2023". */
+  year: string;
+  /** Project category. */
+  category: "residential" | "commercial" | "corporate";
+  /** Brief project description. Recommended 80–180 characters. */
+  description: string;
+  /** Main project image. */
+  image: {
+    /** Image path under /media/. */
+    src: string;
+    /** Descriptive alt text. */
+    alt: string;
+  };
+  /** Label for the back link. E.g. "Back to portfolio". Max ~30 characters. */
+  backLabel: string;
+  /** Href for the back link. E.g. "/portfolio". */
+  backHref: string;
+}
+
+const CATEGORY_LABELS: Record<string, string> = {
+  residential: "Residential",
+  commercial: "Commercial",
+  corporate: "Corporate",
+};
+
+export function ProjectDetail({
+  name,
+  location,
+  year,
+  category,
+  description,
+  image,
+  backLabel,
+  backHref,
+}: ProjectDetailProps) {
+  return (
+    <article className="bg-background">
+      {/* Hero image */}
+      <div className="relative w-full overflow-hidden" style={{ height: "clamp(320px, 55vh, 680px)" }}>
+        <Image
+          src={image.src}
+          alt={image.alt}
+          fill
+          priority
+          className="object-cover"
+          sizes="100vw"
+        />
+        <div className="absolute inset-0 bg-foreground/10" />
+      </div>
+
+      {/* Content */}
+      <div className="mx-auto max-w-7xl px-6 py-16 lg:py-24">
+        <div className="grid grid-cols-1 gap-12 lg:grid-cols-2 lg:gap-20">
+          {/* Left — identity */}
+          <div>
+            <span className="text-secondary mb-4 inline-block text-xs tracking-[0.2em] uppercase">
+              {CATEGORY_LABELS[category] ?? category} · {year}
+            </span>
+            <h1 className="text-foreground mb-4 font-[family-name:var(--font-heading)] text-4xl leading-tight sm:text-5xl">
+              {name}
+            </h1>
+            <p className="text-muted-foreground text-sm tracking-wide">
+              {location}
+            </p>
+          </div>
+
+          {/* Right — description + navigation */}
+          <div className="flex flex-col justify-center">
+            <div className="bg-secondary mb-8 h-px w-12" />
+            <p className="text-muted-foreground text-lg leading-relaxed">
+              {description}
+            </p>
+            <Link
+              href={backHref}
+              className="text-secondary hover:text-foreground mt-10 inline-flex items-center gap-2 text-xs tracking-[0.15em] uppercase transition-colors"
+            >
+              ← {backLabel}
+            </Link>
+          </div>
+        </div>
+      </div>
+    </article>
+  );
+}
