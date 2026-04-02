@@ -15,7 +15,7 @@ export function Footer({ config, nav }: FooterProps) {
           <div>
             <Link
               href="/"
-              className="text-primary-foreground hover:text-secondary font-[family-name:var(--font-heading)] text-2xl transition-colors"
+              className="text-primary-foreground hover:text-secondary font-heading text-2xl transition-colors"
             >
               {config.brand.name}
             </Link>

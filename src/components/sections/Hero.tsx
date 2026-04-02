@@ -44,7 +44,7 @@ export function Hero({
         {/* Text side */}
         <div className="order-2 flex flex-col justify-center px-6 py-20 lg:order-1 lg:px-16 xl:px-24">
           <div className="bg-secondary mb-8 h-px w-12" />
-          <h1 className="text-foreground mb-6 font-[family-name:var(--font-heading)] text-4xl leading-tight sm:text-5xl xl:text-6xl">
+          <h1 className="text-foreground font-heading mb-6 text-4xl leading-tight sm:text-5xl xl:text-6xl">
             {headline}
           </h1>
           {subheadline && (

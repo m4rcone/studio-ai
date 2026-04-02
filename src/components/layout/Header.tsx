@@ -21,7 +21,7 @@ export function Header({ config, nav }: HeaderProps) {
           {/* Logo */}
           <Link
             href="/"
-            className="text-foreground hover:text-secondary font-[family-name:var(--font-heading)] text-xl transition-colors"
+            className="text-foreground hover:text-secondary font-heading text-xl transition-colors"
             onClick={() => setMobileOpen(false)}
           >
             {config.brand.name}
@@ -51,7 +51,7 @@ export function Header({ config, nav }: HeaderProps) {
               />
             </div>
             <button
-              className="text-foreground p-2 focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-secondary md:hidden"
+              className="text-foreground focus-visible:ring-secondary p-2 focus-visible:ring-2 focus-visible:outline-none md:hidden"
               onClick={() => setMobileOpen((v) => !v)}
               aria-label={mobileOpen ? "Close menu" : "Open menu"}
               aria-expanded={mobileOpen}
@@ -87,14 +87,17 @@ export function Header({ config, nav }: HeaderProps) {
 
       {/* Mobile menu overlay */}
       {mobileOpen && (
-        <div id="mobile-menu" className="bg-background fixed inset-0 z-40 flex flex-col px-6 pt-16 pb-10 md:hidden">
+        <div
+          id="mobile-menu"
+          className="bg-background fixed inset-0 z-40 flex flex-col px-6 pt-16 pb-10 md:hidden"
+        >
           <nav className="flex flex-1 flex-col gap-1 pt-8">
             {nav.header.links.map((link) => (
               <Link
                 key={link.href}
                 href={link.href}
                 onClick={() => setMobileOpen(false)}
-                className="text-foreground border-foreground/5 hover:text-secondary border-b py-3 font-[family-name:var(--font-heading)] text-3xl transition-colors"
+                className="text-foreground border-foreground/5 hover:text-secondary font-heading border-b py-3 text-3xl transition-colors"
               >
                 {link.label}
               </Link>

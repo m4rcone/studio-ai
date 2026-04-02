@@ -63,7 +63,7 @@ export function PortfolioGallery({
               key={cat}
               onClick={() => setActiveCategory(cat)}
               aria-pressed={activeCategory === cat}
-              className={`px-5 py-2 text-xs tracking-widest uppercase transition-[color,background-color,border-color] duration-200 focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-secondary ${
+              className={`focus-visible:ring-secondary px-5 py-2 text-xs tracking-widest uppercase transition-[color,background-color,border-color] duration-200 focus-visible:ring-2 focus-visible:outline-none ${
                 activeCategory === cat
                   ? "bg-primary text-primary-foreground"
                   : "border-foreground/20 text-muted-foreground hover:border-secondary hover:text-secondary border"
@@ -92,7 +92,7 @@ export function PortfolioGallery({
                     {CATEGORY_LABELS[project.category] ?? project.category} ·{" "}
                     {project.year}
                   </span>
-                  <h3 className="mb-1 font-[family-name:var(--font-heading)] text-lg text-white">
+                  <h3 className="font-heading mb-1 text-lg text-white">
                     {project.name}
                   </h3>
                   <p className="text-sm text-white/70">{project.location}</p>
@@ -104,7 +104,7 @@ export function PortfolioGallery({
               <Link
                 key={project.id}
                 href={project.href}
-                className="group relative aspect-4/3 block overflow-hidden"
+                className="group relative block aspect-4/3 overflow-hidden"
               >
                 {inner}
               </Link>
