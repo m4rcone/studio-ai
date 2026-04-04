@@ -103,6 +103,12 @@
             "description": "National recognition for the Higienópolis Residence, a project that crystallizes the Atlas identity: contemporary, sophisticated, and human."
           },
           {
+            "id": "event-award-2017-iab",
+            "year": "2017",
+            "title": "IAB-SP Design Excellence Award",
+            "description": "The studio received the Instituto de Arquitetos do Brasil – São Paulo award in the Commercial Interiors category for the Faria Lima Office project, recognized for its innovative use of natural materials and human-centered workspace design."
+          },
+          {
             "id": "event-3d",
             "year": "2019",
             "title": "3D visualization standard",
@@ -113,12 +119,6 @@
             "year": "2024",
             "title": "380 projects delivered",
             "description": "With a team of 14 professionals, the studio celebrates 380 completed projects and a presence in São Paulo, Rio de Janeiro, and Brasília."
-          },
-          {
-            "id": "event-award-2017-iab",
-            "year": "2017",
-            "title": "IAB-SP Design Excellence Award",
-            "description": "The studio received the Instituto de Arquitetos do Brasil – São Paulo award in the Commercial Interiors category for the Faria Lima Office project, recognized for its innovative use of natural materials and human-centered workspace design."
           }
         ]
       }
