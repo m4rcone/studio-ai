@@ -19,6 +19,7 @@
       { "label": "Terms of Use", "href": "/terms" }
     ],
     "copyright": "© 2026 Atlas Architecture. All rights reserved.",
+    "navigationLabel": "Navigation",
     "contactLabel": "Contact",
     "socialLabel": "Social Media"
   }

@@ -27,14 +27,14 @@ export function Footer({ config, nav }: FooterProps) {
           {/* Navigation */}
           <div>
             <p className="text-secondary mb-4 text-xs tracking-[0.2em] uppercase">
-              Navigation
+              {nav.footer.navigationLabel}
             </p>
             <ul className="space-y-2">
               {nav.header.links.map((link) => (
                 <li key={link.href}>
                   <Link
                     href={link.href}
-                    className="text-primary-foreground/60 hover:text-secondary text-sm transition-colors"
+                    className="text-primary-foreground/60 hover:text-secondary focus-visible:ring-secondary text-sm transition-colors focus-visible:ring-2 focus-visible:outline-none"
                   >
                     {link.label}
                   </Link>
@@ -51,13 +51,13 @@ export function Footer({ config, nav }: FooterProps) {
             <div className="mb-6 space-y-2">
               <a
                 href={`tel:${config.contact.phone}`}
-                className="text-primary-foreground/60 hover:text-secondary block text-sm transition-colors"
+                className="text-primary-foreground/60 hover:text-secondary focus-visible:ring-secondary block text-sm transition-colors focus-visible:ring-2 focus-visible:outline-none"
               >
                 {config.contact.phone}
               </a>
               <a
                 href={`mailto:${config.contact.email}`}
-                className="text-primary-foreground/60 hover:text-secondary block text-sm transition-colors"
+                className="text-primary-foreground/60 hover:text-secondary focus-visible:ring-secondary block text-sm transition-colors focus-visible:ring-2 focus-visible:outline-none"
               >
                 {config.contact.email}
               </a>
@@ -78,7 +78,7 @@ export function Footer({ config, nav }: FooterProps) {
                   href={config.social.instagram}
                   target="_blank"
                   rel="noopener noreferrer"
-                  className="text-primary-foreground/60 hover:text-secondary text-sm transition-colors"
+                  className="text-primary-foreground/60 hover:text-secondary focus-visible:ring-secondary text-sm transition-colors focus-visible:ring-2 focus-visible:outline-none"
                 >
                   Instagram
                 </a>
@@ -88,7 +88,7 @@ export function Footer({ config, nav }: FooterProps) {
                   href={config.social.linkedin}
                   target="_blank"
                   rel="noopener noreferrer"
-                  className="text-primary-foreground/60 hover:text-secondary text-sm transition-colors"
+                  className="text-primary-foreground/60 hover:text-secondary focus-visible:ring-secondary text-sm transition-colors focus-visible:ring-2 focus-visible:outline-none"
                 >
                   LinkedIn
                 </a>
@@ -98,7 +98,7 @@ export function Footer({ config, nav }: FooterProps) {
                   href={config.social.facebook}
                   target="_blank"
                   rel="noopener noreferrer"
-                  className="text-primary-foreground/60 hover:text-secondary text-sm transition-colors"
+                  className="text-primary-foreground/60 hover:text-secondary focus-visible:ring-secondary text-sm transition-colors focus-visible:ring-2 focus-visible:outline-none"
                 >
                   Facebook
                 </a>

@@ -36,6 +36,14 @@ export interface ContactSectionProps {
   submitLabel: string;
   /** Label shown after successful submission. */
   successMessage: string;
+  /** Label for the phone info block. E.g. "Phone". */
+  phoneLabel?: string;
+  /** Label for the email info block. E.g. "Email". */
+  emailLabel?: string;
+  /** Label for the address info block. E.g. "Address". */
+  addressLabel?: string;
+  /** Label for the business hours info block. E.g. "Hours". */
+  hoursLabel?: string;
 }
 
 export function ContactSection({
@@ -50,12 +58,33 @@ export function ContactSection({
   fields,
   submitLabel,
   successMessage,
+  phoneLabel = "Phone",
+  emailLabel = "Email",
+  addressLabel = "Address",
+  hoursLabel = "Hours",
 }: ContactSectionProps) {
   const [submitted, setSubmitted] = useState(false);
+  const [isSubmitting, setIsSubmitting] = useState(false);
 
-  function handleSubmit(e: React.FormEvent) {
+  async function handleSubmit(e: React.FormEvent) {
     e.preventDefault();
-    setSubmitted(true);
+    setIsSubmitting(true);
+    try {
+      const form = e.target as HTMLFormElement;
+      const formData = new FormData(form);
+      const res = await fetch("/api/contact", {
+        method: "POST",
+        headers: { "Content-Type": "application/json" },
+        body: JSON.stringify(Object.fromEntries(formData)),
+      });
+      if (res.ok) {
+        setSubmitted(true);
+      }
+    } catch {
+      // Silently fail for now — form will remain visible for retry
+    } finally {
+      setIsSubmitting(false);
+    }
   }
 
   return (
@@ -74,35 +103,35 @@ export function ContactSection({
           <div className="space-y-6">
             <div>
               <p className="text-secondary mb-1 text-xs tracking-widest uppercase">
-                Telefone
+                {phoneLabel}
               </p>
               <a
                 href={`tel:${phone}`}
-                className="text-foreground hover:text-secondary transition-colors"
+                className="text-foreground hover:text-secondary focus-visible:ring-secondary transition-colors focus-visible:ring-2 focus-visible:outline-none"
               >
                 {phone}
               </a>
             </div>
             <div>
               <p className="text-secondary mb-1 text-xs tracking-widest uppercase">
-                E-mail
+                {emailLabel}
               </p>
               <a
                 href={`mailto:${email}`}
-                className="text-foreground hover:text-secondary transition-colors"
+                className="text-foreground hover:text-secondary focus-visible:ring-secondary transition-colors focus-visible:ring-2 focus-visible:outline-none"
               >
                 {email}
               </a>
             </div>
             <div>
               <p className="text-secondary mb-1 text-xs tracking-widest uppercase">
-                Endereço
+                {addressLabel}
               </p>
               <p className="text-foreground">{address}</p>
             </div>
             <div>
               <p className="text-secondary mb-1 text-xs tracking-widest uppercase">
-                Horário
+                {hoursLabel}
               </p>
               <p className="text-foreground">{hours}</p>
             </div>
@@ -167,9 +196,10 @@ export function ContactSection({
               ))}
               <button
                 type="submit"
-                className="bg-primary text-primary-foreground w-full px-6 py-4 text-sm tracking-wide uppercase transition-opacity hover:opacity-90"
+                disabled={isSubmitting}
+                className="bg-primary text-primary-foreground focus-visible:ring-secondary w-full px-6 py-4 text-sm tracking-wide uppercase transition-opacity hover:opacity-90 focus-visible:ring-2 focus-visible:outline-none disabled:opacity-60"
               >
-                {submitLabel}
+                {isSubmitting ? "\u2026" : submitLabel}
               </button>
             </form>
           )}

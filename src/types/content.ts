@@ -141,6 +141,8 @@ export interface Navigation {
     links: NavigationLink[];
     /** Copyright text displayed in the footer. E.g. "© 2025 Company. All rights reserved." */
     copyright: string;
+    /** Label for the navigation links column in the footer. E.g. "Navigation". */
+    navigationLabel: string;
     /** Label for the contact section in the footer. E.g. "Contact". */
     contactLabel: string;
     /** Label for the social media section in the footer. E.g. "Follow us". */
