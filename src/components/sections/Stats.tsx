@@ -17,7 +17,7 @@ export function Stats({ items }: StatsProps) {
         <div className="grid grid-cols-2 gap-8 lg:grid-cols-4 lg:gap-0">
           {items.map((item, index) => (
             <div
-              key={index}
+              key={`${item.value}-${item.label}`}
               className={`flex flex-col items-center px-6 text-center ${
                 index < items.length - 1
                   ? "lg:border-primary-foreground/20 lg:border-r"

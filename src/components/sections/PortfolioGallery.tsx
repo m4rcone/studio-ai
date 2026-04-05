@@ -60,6 +60,7 @@ export function PortfolioGallery({
         <div className="mb-12 flex flex-wrap gap-2">
           {categories.map((cat) => (
             <button
+              type="button"
               key={cat}
               onClick={() => setActiveCategory(cat)}
               aria-pressed={activeCategory === cat}
