@@ -1,0 +1,18 @@
+{
+  "slug": "terms",
+  "meta": {
+    "title": "Terms of Use",
+    "description": "Terms of Use for the Atlas Architecture website. Read about conditions for accessing and using our services."
+  },
+  "sections": [
+    {
+      "type": "page-header",
+      "id": "terms-header",
+      "data": {
+        "eyebrow": "Legal",
+        "title": "Terms of Use",
+        "subtitle": "Last updated: April 2026. By accessing and using the Atlas Architecture website, you agree to comply with the following terms and conditions."
+      }
+    }
+  ]
+}
