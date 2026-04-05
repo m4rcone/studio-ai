@@ -11,16 +11,31 @@ interface CacheEntry {
 }
 
 const cache = new Map<string, CacheEntry>();
+const MAX_CACHE_SIZE = 50;
 
 export async function cachedRead(
   key: string,
   fetcher: () => Promise<string>,
   ttlMs: number,
 ): Promise<string> {
+  const now = Date.now();
   const entry = cache.get(key);
-  if (entry && entry.expiresAt > Date.now()) return entry.value;
+  if (entry && entry.expiresAt > now) return entry.value;
+
+  // Evict expired entries before adding new ones
+  if (cache.size >= MAX_CACHE_SIZE) {
+    for (const [k, v] of cache) {
+      if (v.expiresAt <= now) cache.delete(k);
+    }
+    // If still over limit, evict oldest
+    if (cache.size >= MAX_CACHE_SIZE) {
+      const firstKey = cache.keys().next().value;
+      if (firstKey) cache.delete(firstKey);
+    }
+  }
+
   const value = await fetcher();
-  cache.set(key, { value, expiresAt: Date.now() + ttlMs });
+  cache.set(key, { value, expiresAt: now + ttlMs });
   return value;
 }
 
@@ -53,7 +68,11 @@ export async function buildSystemPrompt(userRole: UserRole): Promise<string> {
           try {
             const { content } = await github.readFile("ai/CONVENTIONS.md");
             return content;
-          } catch {
+          } catch (err) {
+            console.warn(
+              "[studio] Could not read ai/CONVENTIONS.md:",
+              err instanceof Error ? err.message : err,
+            );
             return "(conventions file not found)";
           }
         },
@@ -65,7 +84,11 @@ export async function buildSystemPrompt(userRole: UserRole): Promise<string> {
           try {
             const { content } = await github.readFile("ai/EDITING_GUIDE.md");
             return content;
-          } catch {
+          } catch (err) {
+            console.warn(
+              "[studio] Could not read ai/EDITING_GUIDE.md:",
+              err instanceof Error ? err.message : err,
+            );
             return "(editing guide not found)";
           }
         },
