@@ -2,27 +2,27 @@
   "slug": "home",
   "meta": {
     "title": "Home",
-    "description": "Atlas Architecture — Estudio de arquitectura y diseño de interiores en São Paulo. Proyectos residenciales y comerciales con atención personalizada y visualización 3D."
+    "description": "Atlas Architecture — Architecture and interior design studio in São Paulo. Residential and commercial projects with personalized attention and 3D visualization."
   },
   "sections": [
     {
       "type": "hero",
       "id": "main-hero",
       "data": {
-        "headline": "Diseñamos espacios que cuentan tu historia",
-        "subheadline": "Del concepto a la entrega, cada proyecto se desarrolla con dedicación exclusiva — combinando estética contemporánea con funcionalidad inteligente.",
+        "headline": "We design spaces that tell your story",
+        "subheadline": "From concept to delivery, every project is developed with exclusive dedication — combining contemporary aesthetics with intelligent functionality.",
         "cta": {
-          "label": "Solicitar presupuesto",
+          "label": "Request a quote",
           "href": "https://wa.me/5511987654321",
           "style": "whatsapp"
         },
         "secondaryCta": {
-          "label": "Explorar nuestro portafolio",
+          "label": "Explore our portfolio",
           "href": "/portfolio"
         },
         "image": {
           "src": "/media/hero-main-project.svg",
-          "alt": "Sala de estar contemporánea diseñada por Atlas Architecture"
+          "alt": "Contemporary living room designed by Atlas Architecture"
         }
       }
     },
@@ -33,19 +33,19 @@
         "items": [
           {
             "value": "15+",
-            "label": "Años de experiencia"
+            "label": "Years of experience"
           },
           {
             "value": "380+",
-            "label": "Proyectos entregados"
+            "label": "Projects delivered"
           },
           {
             "value": "98%",
-            "label": "Satisfacción de clientes"
+            "label": "Client satisfaction"
           },
           {
             "value": "12",
-            "label": "Premios ganados"
+            "label": "Awards won"
           }
         ]
       }
@@ -54,42 +54,42 @@
       "type": "portfolio-preview",
       "id": "featured-portfolio",
       "data": {
-        "eyebrow": "Portafolio",
-        "headline": "Proyectos que transforman espacios",
-        "subheadline": "Una selección de nuestros trabajos más recientes en arquitectura residencial y comercial.",
-        "viewAllLabel": "Ver portafolio completo",
+        "eyebrow": "Portfolio",
+        "headline": "Projects that transform spaces",
+        "subheadline": "A selection of our most recent work in residential and commercial architecture.",
+        "viewAllLabel": "View full portfolio",
         "viewAllHref": "/portfolio",
         "items": [
           {
             "id": "higienopolis-house",
-            "name": "Residencia Higienópolis",
+            "name": "Higienópolis Residence",
             "location": "São Paulo, SP",
             "category": "residential",
             "image": {
               "src": "/media/project-higienopolis-house.svg",
-              "alt": "Fachada contemporánea de una residencia en Higienópolis"
+              "alt": "Contemporary facade of a residence in Higienópolis"
             },
             "href": "/project-higienopolis-residence"
           },
           {
             "id": "faria-lima-office",
-            "name": "Oficina Faria Lima",
+            "name": "Faria Lima Office",
             "location": "São Paulo, SP",
             "category": "corporate",
             "image": {
               "src": "/media/project-faria-lima-office.svg",
-              "alt": "Ambiente corporativo moderno en Faria Lima"
+              "alt": "Modern corporate environment in Faria Lima"
             },
             "href": "/project-faria-lima-office"
           },
           {
             "id": "oscar-freire-boutique",
-            "name": "Boutique Oscar Freire",
+            "name": "Oscar Freire Boutique",
             "location": "São Paulo, SP",
             "category": "commercial",
             "image": {
               "src": "/media/project-oscar-freire-boutique.svg",
-              "alt": "Interior sofisticado de una boutique en Oscar Freire"
+              "alt": "Sophisticated interior of a boutique on Oscar Freire"
             },
             "href": "/project-oscar-freire-boutique"
           }
@@ -100,24 +100,24 @@
       "type": "testimonials",
       "id": "client-testimonials",
       "data": {
-        "eyebrow": "Testimonios",
-        "headline": "Lo que dicen nuestros clientes",
+        "eyebrow": "Testimonials",
+        "headline": "What our clients say",
         "items": [
           {
             "id": "testimonial-marina",
-            "quote": "Atlas transformó nuestra casa en algo que ni siquiera sabíamos que queríamos. El proceso fue transparente de principio a fin, y la entrega superó todas nuestras expectativas. Los recomendamos sin dudarlo.",
+            "quote": "Atlas transformed our home into something we didn't even know we wanted. The process was transparent from start to finish, and the delivery exceeded all our expectations. We recommend them without hesitation.",
             "name": "Marina & Rodrigo Fonseca",
-            "description": "Residencia — Alto de Pinheiros, São Paulo"
+            "description": "Residence — Alto de Pinheiros, São Paulo"
           },
           {
             "id": "testimonial-carlos",
-            "quote": "Necesitábamos un estudio que pudiera transmitir innovación y profesionalismo al mismo tiempo. Atlas capturó exactamente ese equilibrio. La visualización 3D fue clave para convencernos antes de comenzar la obra.",
+            "quote": "We needed a studio that could convey innovation and professionalism at the same time. Atlas captured exactly that balance. The 3D visualization was key in convincing us before construction began.",
             "name": "Carlos Andrade",
-            "description": "Sede Corporativa — Itaim Bibi, São Paulo"
+            "description": "Corporate Headquarters — Itaim Bibi, São Paulo"
           },
           {
             "id": "testimonial-paula",
-            "quote": "Nuestra tienda quedó exactamente como la imaginaba, pero mejor. Aportaron soluciones que nunca se me habrían ocurrido. El plazo se cumplió y el presupuesto fue respetado.",
+            "quote": "Our store turned out exactly as I imagined, but even better. They brought solutions I would never have thought of. The deadline was met and the budget was respected.",
             "name": "Paula Silveira",
             "description": "Boutique — Jardins, São Paulo"
           }
@@ -128,10 +128,10 @@
       "type": "cta",
       "id": "quote-cta",
       "data": {
-        "headline": "¿Creamos algo extraordinario juntos?",
-        "text": "Todo proyecto comienza con una conversación. Contáctenos y descubra cómo podemos transformar su espacio.",
+        "headline": "Shall we create something extraordinary together?",
+        "text": "Every project starts with a conversation. Get in touch and discover how we can transform your space.",
         "cta": {
-          "label": "Chatear por WhatsApp",
+          "label": "Chat on WhatsApp",
           "href": "https://wa.me/5511987654321",
           "style": "whatsapp"
         }
