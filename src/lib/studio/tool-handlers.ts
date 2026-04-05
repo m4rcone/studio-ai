@@ -9,6 +9,42 @@ import {
 } from "./json-path";
 
 // ---------------------------------------------------------------------------
+// Validation
+// ---------------------------------------------------------------------------
+
+const ALLOWED_PREFIXES = ["content/", "src/components/sections/", "ai/"];
+
+/** Validates that a file path stays within allowed directories. */
+function validateFilePath(filePath: string): void {
+  if (!filePath || typeof filePath !== "string") {
+    throw new Error("Missing or invalid file_path parameter.");
+  }
+  if (filePath.startsWith("/") || filePath.startsWith("\\")) {
+    throw new Error("Absolute paths are not allowed.");
+  }
+  const normalized = filePath.replace(/\\/g, "/");
+  if (normalized.includes("..")) {
+    throw new Error("Path traversal (..) is not allowed.");
+  }
+  if (!ALLOWED_PREFIXES.some((prefix) => normalized.startsWith(prefix))) {
+    throw new Error(
+      `Access denied. Files must be under: ${ALLOWED_PREFIXES.join(", ")}`,
+    );
+  }
+}
+
+/** Validates that a value is a non-empty string. */
+function requireString(input: Record<string, unknown>, key: string): string {
+  const val = input[key];
+  if (typeof val !== "string" || val.length === 0) {
+    throw new Error(
+      `Missing or invalid parameter: "${key}" (expected non-empty string)`,
+    );
+  }
+  return val;
+}
+
+// ---------------------------------------------------------------------------
 // Helpers
 // ---------------------------------------------------------------------------
 
@@ -79,7 +115,8 @@ async function commitJson(
   const isFirst = updated.changes.length === 1;
 
   if (isFirst) {
-    return "A preview is being generated and will be ready in about 30–60 seconds.";
+    const prLine = updated.prUrl ? `Pull Request: ${updated.prUrl}\n` : "";
+    return `${prLine}A preview is being generated and will be ready in about 30–60 seconds.`;
   }
   if (updated.previewStatus === "ready" && updated.previewUrl) {
     return `Preview your changes at: ${updated.previewUrl}`;
@@ -101,7 +138,8 @@ export async function executeTool(
   switch (toolName) {
     // -----------------------------------------------------------------------
     case "read_content": {
-      const filePath = toolInput.file_path as string;
+      const filePath = requireString(toolInput, "file_path");
+      validateFilePath(filePath);
       const activeSession = session.getSession(username);
       const branch = activeSession?.branchName ?? env.github.defaultBranch;
       const { content } = await github.readFile(filePath, branch);
@@ -113,7 +151,8 @@ export async function executeTool(
 
     // -----------------------------------------------------------------------
     case "update_content": {
-      const filePath = toolInput.file_path as string;
+      const filePath = requireString(toolInput, "file_path");
+      validateFilePath(filePath);
       const changes = toolInput.changes as Array<{
         path: string;
         value: unknown;
@@ -140,8 +179,9 @@ export async function executeTool(
 
     // -----------------------------------------------------------------------
     case "add_list_item": {
-      const filePath = toolInput.file_path as string;
-      const listPath = toolInput.list_path as string;
+      const filePath = requireString(toolInput, "file_path");
+      validateFilePath(filePath);
+      const listPath = requireString(toolInput, "list_path");
       const item = toolInput.item as unknown;
       const position = (toolInput.position as string | undefined) ?? "end";
 
@@ -173,8 +213,9 @@ export async function executeTool(
 
     // -----------------------------------------------------------------------
     case "remove_list_item": {
-      const filePath = toolInput.file_path as string;
-      const listPath = toolInput.list_path as string;
+      const filePath = requireString(toolInput, "file_path");
+      validateFilePath(filePath);
+      const listPath = requireString(toolInput, "list_path");
       const match = toolInput.match as Record<string, unknown>;
 
       const { data } = await readJson(filePath, username);
@@ -200,8 +241,9 @@ export async function executeTool(
 
     // -----------------------------------------------------------------------
     case "reorder_list": {
-      const filePath = toolInput.file_path as string;
-      const listPath = toolInput.list_path as string;
+      const filePath = requireString(toolInput, "file_path");
+      validateFilePath(filePath);
+      const listPath = requireString(toolInput, "list_path");
       const newOrder = toolInput.new_order as number[];
 
       const { data } = await readJson(filePath, username);
@@ -250,7 +292,7 @@ export async function executeTool(
 
     // -----------------------------------------------------------------------
     case "get_component_types": {
-      const sectionType = toolInput.section_type as string;
+      const sectionType = requireString(toolInput, "section_type");
       const componentName = toPascalCase(sectionType);
       const filePath = `src/components/sections/${componentName}.tsx`;
 
