@@ -6,6 +6,18 @@ import { Button } from "@/components/ui/Button";
 import type { ButtonStyle } from "@/components/ui/Button";
 import type { SiteConfig, Navigation } from "@/types/content";
 
+const VALID_BUTTON_STYLES = new Set<string>([
+  "primary",
+  "secondary",
+  "whatsapp",
+  "outline",
+]);
+function safeButtonStyle(style: string | undefined): ButtonStyle {
+  return VALID_BUTTON_STYLES.has(style ?? "")
+    ? (style as ButtonStyle)
+    : "primary";
+}
+
 interface HeaderProps {
   config: SiteConfig;
   nav: Navigation;
@@ -47,7 +59,7 @@ export function Header({ config, nav }: HeaderProps) {
               <Button
                 label={nav.header.cta.label}
                 href={nav.header.cta.href}
-                style={nav.header.cta.style as ButtonStyle}
+                style={safeButtonStyle(nav.header.cta.style)}
               />
             </div>
             <button
@@ -59,6 +71,7 @@ export function Header({ config, nav }: HeaderProps) {
             >
               {mobileOpen ? (
                 <svg
+                  aria-hidden="true"
                   width="20"
                   height="20"
                   viewBox="0 0 20 20"
@@ -70,6 +83,7 @@ export function Header({ config, nav }: HeaderProps) {
                 </svg>
               ) : (
                 <svg
+                  aria-hidden="true"
                   width="20"
                   height="20"
                   viewBox="0 0 20 20"
@@ -107,7 +121,7 @@ export function Header({ config, nav }: HeaderProps) {
             <Button
               label={nav.header.cta.label}
               href={nav.header.cta.href}
-              style={nav.header.cta.style as ButtonStyle}
+              style={safeButtonStyle(nav.header.cta.style)}
               className="w-full justify-center"
             />
           </div>
