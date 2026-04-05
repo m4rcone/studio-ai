@@ -281,6 +281,7 @@ The site includes an embedded AI-powered content editing studio at `/studio-ai`.
 - `src/components/studio/` — studio UI components
 - `src/app/(studio)/` — studio pages (route group, does not affect public URLs)
 - `src/app/api/studio/` — studio API routes
+- `src/proxy.ts` — Next.js proxy (formerly middleware) — protects studio routes with JWT auth
 
 ### Environment variables required
 
@@ -290,7 +291,6 @@ See `.env.local`. Required vars:
 - `GITHUB_TOKEN` — for reading/writing content via GitHub API
 - `GITHUB_OWNER`, `GITHUB_REPO` — repository coordinates
 - `GITHUB_DEFAULT_BRANCH` — default branch (defaults to `main`)
-- `VERCEL_PROJECT_NAME` — for generating preview URLs
 - `STUDIO_USERS` — comma-separated `email:role` pairs (roles: `client` | `team`)
 - `STUDIO_PASSWORD` — shared access password for all studio users
 - `AUTH_SECRET` — JWT signing secret (keep long and random)
@@ -301,7 +301,9 @@ See `.env.local`. Required vars:
 - Tool definitions in `tools.ts` must match the handlers in `tool-handlers.ts`
 - The system prompt reads `ai/CONVENTIONS.md` and `ai/EDITING_GUIDE.md` at runtime (cached 5 min) — keep these up to date
 - Session state is in-memory — it resets on server restart (acceptable for MVP)
-- The studio uses route group `(studio)` — URLs start with `/studio-ai`, middleware protects all routes except `/studio-ai/login` and `/api/studio/auth`
+- The studio uses route group `(studio)` — URLs start with `/studio-ai`, `src/proxy.ts` protects all routes except `/studio-ai/login` and `/api/studio/auth`
+- The chat API (`/api/studio/chat`) enforces a 50-message / 100 KB payload limit per request
+- Logging conventions: use `console.warn` for recoverable degraded states (e.g., missing guide files); use `console.error` for unexpected failures (e.g., tool input parse errors); do not leave `console.log` in server-side code
 
 ---
 

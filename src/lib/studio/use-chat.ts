@@ -9,6 +9,7 @@ interface Callbacks {
   onTextChunk: (text: string) => void;
   onToolCall: (name: string, input: Record<string, unknown>) => void;
   onToolResult: (name: string, summary: string) => void;
+  onSessionUpdate: (session: EditSession) => void;
   onDone: (session: EditSession | null) => void;
   onError: (message: string) => void;
 }
@@ -80,6 +81,9 @@ export async function sendMessage(
             break;
           case "tool_result":
             callbacks.onToolResult(event.name, event.summary);
+            break;
+          case "session_update":
+            callbacks.onSessionUpdate(event.session);
             break;
           case "done":
             callbacks.onDone(event.session);

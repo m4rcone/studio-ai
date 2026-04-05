@@ -235,32 +235,69 @@ export async function getPreviewUrlFromPR(
 ): Promise<string | null> {
   const { owner, repo } = env.github;
 
-  // Get the branch name from the PR
-  const pr = await request<{ head: { ref: string } }>(
+  // Get the PR's branch name and head commit SHA
+  const pr = await request<{ head: { ref: string; sha: string } }>(
     `/repos/${owner}/${repo}/pulls/${prNumber}`,
   );
   const branch = pr.head.ref;
+  const sha = pr.head.sha;
 
-  // Get Preview deployments for this branch
-  const deployments = await request<Array<{ id: number; environment: string }>>(
-    `/repos/${owner}/${repo}/deployments?ref=${encodeURIComponent(branch)}&environment=Preview&per_page=5`,
+  // --- Strategy 1: GitHub Deployments API ---
+  // Vercel registers deployments here. Environment name may be "Preview",
+  // "Preview – project-name", etc. — match case-insensitively.
+  const allDeployments = await request<
+    Array<{ id: number; environment: string }>
+  >(
+    `/repos/${owner}/${repo}/deployments?ref=${encodeURIComponent(branch)}&per_page=10`,
   );
 
-  if (!Array.isArray(deployments) || deployments.length === 0) return null;
+  if (Array.isArray(allDeployments)) {
+    const previewDeps = allDeployments.filter((d) =>
+      d.environment.toLowerCase().includes("preview"),
+    );
 
-  const deployment = deployments[0];
+    for (const dep of previewDeps) {
+      const statuses = await request<
+        Array<{ state: string; environment_url?: string }>
+      >(`/repos/${owner}/${repo}/deployments/${dep.id}/statuses`);
 
-  // Get deployment statuses; the Vercel bot sets state=success with an environment_url
-  const statuses = await request<
-    Array<{ state: string; environment_url?: string }>
-  >(`/repos/${owner}/${repo}/deployments/${deployment.id}/statuses`);
+      if (Array.isArray(statuses)) {
+        const success = statuses.find(
+          (s) => s.state === "success" && s.environment_url,
+        );
+        if (success?.environment_url) return success.environment_url;
+      }
+    }
+  }
 
-  if (!Array.isArray(statuses)) return null;
-
-  const success = statuses.find(
-    (s) => s.state === "success" && s.environment_url,
+  // --- Strategy 2: GitHub Checks API ---
+  // Vercel also posts check runs for the head commit. The summary or
+  // details_url contains the preview URL.
+  const checksData = await request<{
+    check_runs: Array<{
+      name: string;
+      conclusion: string | null;
+      output: { summary: string | null };
+      details_url: string;
+    }>;
+  }>(`/repos/${owner}/${repo}/commits/${sha}/check-runs?per_page=10`).catch(
+    () => null,
   );
-  return success?.environment_url ?? null;
+
+  if (checksData?.check_runs) {
+    for (const run of checksData.check_runs) {
+      if (
+        run.name.toLowerCase().includes("vercel") &&
+        run.conclusion === "success"
+      ) {
+        const summary = run.output.summary ?? "";
+        const match = summary.match(/https:\/\/[^\s)"'<>]+\.vercel\.app/);
+        if (match) return match[0];
+      }
+    }
+  }
+
+  return null;
 }
 
 /**

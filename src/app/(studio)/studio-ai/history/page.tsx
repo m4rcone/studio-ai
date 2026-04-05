@@ -41,7 +41,7 @@ export default function HistoryPage() {
         )}
 
         {error && !loading && (
-          <div className="rounded-(--radius) border border-red-200 bg-red-50 px-4 py-3 text-sm text-red-700">
+          <div className="rounded-[var(--radius)] border border-red-200 bg-red-50 px-4 py-3 text-sm text-red-700">
             {error}
           </div>
         )}

@@ -21,14 +21,14 @@ export default async function StudioLayout({
   const user = token ? await verifyToken(token) : null;
 
   return (
-    <div className="bg-muted/40 flex min-h-screen flex-col">
+    <div className="bg-muted/40 flex h-screen flex-col">
       <StudioTopBar
         brandName={config.brand.name}
         brandLogo={config.brand.logo}
         username={user?.username ?? null}
       />
       <StudioNav />
-      <main className="flex flex-1 flex-col overflow-hidden">{children}</main>
+      <main className="flex flex-1 flex-col overflow-y-auto">{children}</main>
     </div>
   );
 }

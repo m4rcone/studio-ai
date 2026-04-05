@@ -211,7 +211,13 @@ async function processStream(
         input = block.input_json
           ? (JSON.parse(block.input_json) as Record<string, unknown>)
           : {};
-      } catch {
+      } catch (err) {
+        console.error(
+          `[studio] Failed to parse tool input for "${block.tool_name}":`,
+          err,
+          "raw:",
+          block.input_json,
+        );
         input = {};
       }
 
@@ -304,6 +310,13 @@ export async function runAgent(params: {
             // Emit a short summary (first line of result keeps chat UI tidy)
             const summary = resultContent.split("\n")[0].slice(0, 120);
             push({ type: "tool_result", name: call.name, summary });
+
+            // After any commit tool, push the current session state so the UI
+            // can show the SessionBanner immediately (without waiting for onDone).
+            const updatedSession = getSession(username);
+            if (updatedSession) {
+              push({ type: "session_update", session: updatedSession });
+            }
 
             toolResults.push({
               type: "tool_result",

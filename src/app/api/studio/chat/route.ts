@@ -23,6 +23,20 @@ export async function POST(request: Request): Promise<Response> {
     );
   }
 
+  if (messages.length > 50) {
+    return Response.json(
+      { error: "Message history too long (max 50 messages)" },
+      { status: 400 },
+    );
+  }
+
+  if (JSON.stringify(messages).length > 100_000) {
+    return Response.json(
+      { error: "Message payload too large (max 100 KB)" },
+      { status: 400 },
+    );
+  }
+
   const stream = await runAgent({
     messages,
     username: user.username,

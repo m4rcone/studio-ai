@@ -26,7 +26,7 @@ export async function GET(): Promise<Response> {
   const { owner, repo, defaultBranch } = env.github;
 
   const res = await fetch(
-    `https://api.github.com/repos/${owner}/${repo}/commits?sha=${defaultBranch}&per_page=30`,
+    `https://api.github.com/repos/${owner}/${repo}/commits?sha=${defaultBranch}&per_page=100`,
     {
       headers: {
         Authorization: `Bearer ${env.github.token}`,
@@ -43,9 +43,16 @@ export async function GET(): Promise<Response> {
 
   const raw = (await res.json()) as GithubCommit[];
 
-  // Keep studio edits (recognised by commit message prefix) and show all others
-  // so the user gets a complete picture of what changed.
-  const commits: CommitEntry[] = raw.map((c) => ({
+  const studioCommits = raw.filter((c) => {
+    const firstLine = c.commit.message.split("\n")[0];
+    return (
+      firstLine.startsWith("content(studio):") ||
+      firstLine.startsWith("chore(studio):") ||
+      firstLine.startsWith("Studio AI:")
+    );
+  });
+
+  const commits: CommitEntry[] = studioCommits.map((c) => ({
     sha: c.sha,
     message: c.commit.message.split("\n")[0], // first line only
     date: c.commit.author.date,

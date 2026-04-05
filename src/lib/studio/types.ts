@@ -29,6 +29,7 @@ export type StreamEvent =
   | { type: "text"; content: string }
   | { type: "tool_call"; name: string; input: Record<string, unknown> }
   | { type: "tool_result"; name: string; summary: string }
+  | { type: "session_update"; session: EditSession }
   | { type: "done"; session: EditSession | null }
   | { type: "error"; message: string };
 

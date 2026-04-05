@@ -13,7 +13,10 @@ export async function GET(): Promise<Response> {
   return Response.json({
     status: activeSession.status,
     branchName: activeSession.branchName,
+    prNumber: activeSession.prNumber,
+    prUrl: activeSession.prUrl,
     previewUrl: activeSession.previewUrl,
+    previewStatus: activeSession.previewStatus,
     changes: activeSession.changes,
     createdAt: activeSession.createdAt,
   });
