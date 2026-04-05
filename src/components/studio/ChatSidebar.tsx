@@ -16,7 +16,7 @@ export function ChatSidebar() {
 
   return (
     <aside className="hidden w-56 shrink-0 flex-col gap-3 self-start py-4 xl:flex">
-      <div className="bg-background border-muted/60 rounded-[var(--radius)] border p-4 shadow-sm">
+      <div className="bg-background border-muted/60 rounded-(--radius) border p-4 shadow-sm">
         <h3 className="text-foreground/60 mb-3 text-[10px] font-semibold tracking-widest uppercase">
           What you can do
         </h3>
@@ -34,7 +34,7 @@ export function ChatSidebar() {
         </ul>
       </div>
 
-      <div className="bg-background border-muted/60 rounded-[var(--radius)] border p-4 shadow-sm">
+      <div className="bg-background border-muted/60 rounded-(--radius) border p-4 shadow-sm">
         <h3 className="text-foreground/60 mb-3 text-[10px] font-semibold tracking-widest uppercase">
           Tips
         </h3>
@@ -51,7 +51,7 @@ export function ChatSidebar() {
         </ul>
       </div>
 
-      <div className="bg-primary/5 border-primary/20 rounded-[var(--radius)] border p-3">
+      <div className="bg-primary/5 border-primary/20 rounded-(--radius) border p-3">
         <p className="text-muted-foreground text-[11px] leading-relaxed">
           Changes are published only after your approval.{" "}
           <span className="text-foreground font-medium">

@@ -6,7 +6,7 @@ interface StudioCardProps {
 export function StudioCard({ children, className = "" }: StudioCardProps) {
   return (
     <div
-      className={`bg-background border-muted rounded-[var(--radius)] border p-5 shadow-sm ${className}`}
+      className={`bg-background border-muted rounded-(--radius) border p-5 shadow-sm ${className}`}
     >
       {children}
     </div>

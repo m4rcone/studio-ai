@@ -340,7 +340,7 @@ export function ChatInterface() {
   const isEmpty = messages.length === 0;
 
   return (
-    <div className="bg-background border-muted/60 flex min-h-0 flex-1 flex-col overflow-hidden rounded-[var(--radius)] border shadow-sm">
+    <div className="bg-background border-muted/60 flex min-h-0 flex-1 flex-col overflow-hidden rounded-(--radius) border shadow-sm">
       {/* Session banner */}
       {session && (
         <div className="shrink-0 px-4 pt-3">
