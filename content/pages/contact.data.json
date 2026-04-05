@@ -9,7 +9,7 @@
       "type": "page-header",
       "id": "contact-header",
       "data": {
-        "eyebrow": "`Contact`",
+        "eyebrow": "Contact",
         "title": "Let's talk about your project",
         "subtitle": "Fill out the form or reach us on WhatsApp. We respond within 24 business hours."
       }
@@ -21,10 +21,14 @@
         "headline": "Request a quote",
         "description": "Tell us about your project and we'll get in touch to schedule a no-commitment conversation. Every great project starts with a good conversation.",
         "phone": "(11) 3456-7890",
-        "email": "contato@atlasarquitetura.com.br",
+        "email": "contact@atlasarchitecture.com.br",
         "address": "Rua Oscar Freire, 980 - Suite 42, Jardins, São Paulo/SP",
         "hours": "Monday to Friday: 9am – 6pm · Saturday: 9am – 1pm",
         "whatsappUrl": "https://wa.me/5511987654321",
+        "phoneLabel": "Phone",
+        "emailLabel": "Email",
+        "addressLabel": "Address",
+        "hoursLabel": "Hours",
         "whatsappLabel": "Chat on WhatsApp",
         "fields": [
           {
