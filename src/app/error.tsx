@@ -21,7 +21,7 @@ export default function Error({ error, reset }: ErrorProps) {
       <p className="text-muted-foreground">{s.description}</p>
       <button
         onClick={reset}
-        className="bg-primary text-primary-foreground rounded-(--radius) px-6 py-2 text-sm font-medium transition-opacity hover:opacity-90"
+        className="bg-primary text-primary-foreground rounded-[var(--radius)] px-6 py-2 text-sm font-medium transition-opacity hover:opacity-90"
       >
         {s.retry}
       </button>

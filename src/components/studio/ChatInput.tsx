@@ -38,7 +38,7 @@ export function ChatInput({ onSend, disabled }: ChatInputProps) {
 
   return (
     <div className="border-muted bg-background shrink-0 border-t p-3">
-      <div className="border-muted bg-muted/30 focus-within:border-primary/40 focus-within:ring-primary/20 flex items-end gap-2 rounded-(--radius) border px-3 py-2 transition-all focus-within:ring-1">
+      <div className="border-muted bg-muted/30 focus-within:border-primary/40 focus-within:ring-primary/20 flex items-end gap-2 rounded-[var(--radius)] border px-3 py-2 transition-all focus-within:ring-1">
         <textarea
           ref={textareaRef}
           value={value}
@@ -52,7 +52,7 @@ export function ChatInput({ onSend, disabled }: ChatInputProps) {
         <button
           onClick={handleSend}
           disabled={disabled || !value.trim()}
-          className="bg-primary text-primary-foreground mb-0.5 shrink-0 cursor-pointer rounded-(--radius) px-3 py-1.5 text-xs font-medium transition-opacity hover:opacity-90 disabled:cursor-not-allowed disabled:opacity-40"
+          className="bg-primary text-primary-foreground mb-0.5 shrink-0 cursor-pointer rounded-[var(--radius)] px-3 py-1.5 text-xs font-medium transition-opacity hover:opacity-90 disabled:cursor-not-allowed disabled:opacity-40"
         >
           {disabled ? (
             <span className="flex items-center gap-1">

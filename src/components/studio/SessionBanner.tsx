@@ -44,6 +44,13 @@ export function SessionBanner(props: SessionBannerProps) {
     "approve" | "discard" | null
   >(null);
   const pollRef = useRef<ReturnType<typeof setInterval> | null>(null);
+  const isMountedRef = useRef(true);
+
+  useEffect(() => {
+    return () => {
+      isMountedRef.current = false;
+    };
+  }, []);
 
   useEffect(() => {
     if (isControlled) return;
@@ -61,6 +68,7 @@ export function SessionBanner(props: SessionBannerProps) {
         const res = await fetch("/api/studio/session").catch(() => null);
         if (!res?.ok) return;
         const data = (await res.json()) as SessionData;
+        if (!isMountedRef.current) return;
         if (data.status === "none") {
           setOwnSession(null);
         } else {
@@ -140,7 +148,7 @@ export function SessionBanner(props: SessionBannerProps) {
   const changeCount = session.changes?.length ?? 0;
 
   return (
-    <div className="border-secondary/40 bg-secondary/10 flex flex-col gap-3 rounded-(--radius) border p-3 sm:flex-row sm:items-center">
+    <div className="border-secondary/40 bg-secondary/10 flex flex-col gap-3 rounded-[var(--radius)] border p-3 sm:flex-row sm:items-center">
       <div className="min-w-0 flex-1">
         <p className="text-foreground text-sm font-medium">
           {changeCount === 0
@@ -150,7 +158,7 @@ export function SessionBanner(props: SessionBannerProps) {
         {session.previewStatus === "building" && (
           <p className="text-muted-foreground mt-0.5 flex items-center gap-1.5 text-xs">
             <span className="inline-block h-2 w-2 animate-spin rounded-full border border-current border-t-transparent" />
-            Preview is being generated… (30–60 seconds)
+            Generating preview… (30–60 seconds)
           </p>
         )}
         {session.previewStatus === "ready" && session.previewUrl && (
@@ -158,15 +166,15 @@ export function SessionBanner(props: SessionBannerProps) {
             href={session.previewUrl}
             target="_blank"
             rel="noopener noreferrer"
-            className="text-muted-foreground hover:text-foreground mt-0.5 block truncate text-xs underline underline-offset-2"
+            className="text-primary hover:text-primary/80 mt-0.5 block truncate text-xs font-medium underline underline-offset-2"
           >
-            {session.previewUrl}
+            View preview ↗
           </a>
         )}
         {session.previewStatus === "error" && (
           <p className="text-muted-foreground mt-0.5 text-xs">
-            Preview generation failed. Your changes have been saved — try
-            approving or contact the team.
+            Preview unavailable. Your changes are saved — approve or discard
+            when ready.
           </p>
         )}
       </div>
@@ -175,7 +183,7 @@ export function SessionBanner(props: SessionBannerProps) {
         {!isControlled && (
           <Link
             href="/studio-ai/chat"
-            className="border-foreground/20 text-foreground hover:border-foreground/50 rounded-(--radius) border px-3 py-1.5 text-xs transition-colors"
+            className="border-foreground/20 text-foreground hover:border-foreground/50 rounded-[var(--radius)] border px-3 py-1.5 text-xs transition-colors"
           >
             Continue editing
           </Link>
@@ -183,14 +191,14 @@ export function SessionBanner(props: SessionBannerProps) {
         <button
           onClick={handleApprove}
           disabled={actionLoading !== null}
-          className="bg-primary text-primary-foreground cursor-pointer rounded-(--radius) px-3 py-1.5 text-xs transition-opacity hover:opacity-90 disabled:opacity-50"
+          className="bg-primary text-primary-foreground cursor-pointer rounded-[var(--radius)] px-3 py-1.5 text-xs transition-opacity hover:opacity-90 disabled:opacity-50"
         >
           {actionLoading === "approve" ? "Publishing…" : "Publish"}
         </button>
         <button
           onClick={handleDiscard}
           disabled={actionLoading !== null}
-          className="border-foreground/20 cursor-pointer rounded-(--radius) border px-3 py-1.5 text-xs transition-colors hover:border-red-400 hover:text-red-600 disabled:opacity-50"
+          className="border-foreground/20 cursor-pointer rounded-[var(--radius)] border px-3 py-1.5 text-xs transition-colors hover:border-red-400 hover:text-red-600 disabled:opacity-50"
         >
           {actionLoading === "discard" ? "Discarding…" : "Discard"}
         </button>

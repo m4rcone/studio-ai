@@ -1,10 +1,8 @@
 "use client";
 
 import { useState, type SyntheticEvent } from "react";
-import { useRouter } from "next/navigation";
 
 export function LoginForm() {
-  const router = useRouter();
   const [username, setUsername] = useState("");
   const [password, setPassword] = useState("");
   const [error, setError] = useState("");
@@ -25,8 +23,7 @@ export function LoginForm() {
       const data = (await res.json()) as { success: boolean; error?: string };
 
       if (data.success) {
-        router.push("/studio-ai");
-        router.refresh();
+        window.location.href = "/studio-ai";
       } else {
         setError(data.error ?? "Invalid credentials");
       }
@@ -38,7 +35,7 @@ export function LoginForm() {
   }
 
   const inputClass =
-    "w-full px-3 py-2.5 text-sm border border-muted bg-background rounded-(--radius) " +
+    "w-full px-3 py-2.5 text-sm border border-muted bg-background rounded-[var(--radius)] " +
     "focus:outline-none focus:ring-2 focus:ring-primary/30 focus:border-primary/50 " +
     "placeholder:text-muted-foreground transition-colors";
 
@@ -58,7 +55,7 @@ export function LoginForm() {
           required
           value={username}
           onChange={(e) => setUsername(e.target.value)}
-          placeholder="seu-usuario"
+          placeholder="your-username"
           className={inputClass}
         />
       </div>
@@ -85,7 +82,7 @@ export function LoginForm() {
       {error && (
         <p
           role="alert"
-          className="rounded-(--radius) border border-red-200 bg-red-50 px-3 py-2 text-sm text-red-600"
+          className="rounded-[var(--radius)] border border-red-200 bg-red-50 px-3 py-2 text-sm text-red-600"
         >
           {error}
         </p>
@@ -94,7 +91,7 @@ export function LoginForm() {
       <button
         type="submit"
         disabled={loading}
-        className="bg-primary text-primary-foreground w-full cursor-pointer rounded-(--radius) px-4 py-2.5 text-sm font-medium transition-opacity hover:opacity-90 disabled:opacity-60"
+        className="bg-primary text-primary-foreground w-full cursor-pointer rounded-[var(--radius)] px-4 py-2.5 text-sm font-medium transition-opacity hover:opacity-90 disabled:opacity-60"
       >
         {loading ? "Signing in…" : "Sign in"}
       </button>

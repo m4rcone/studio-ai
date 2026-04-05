@@ -190,11 +190,20 @@ export function ChatMessage({
 
   return (
     <div className={`flex ${isUser ? "justify-end" : "justify-start"} mb-3`}>
+      {!isUser && (
+        <div
+          role="img"
+          aria-label="AI assistant"
+          className="bg-primary/10 text-primary mt-0.5 mr-2 flex h-6 w-6 shrink-0 items-center justify-center rounded-full text-[10px] font-semibold"
+        >
+          AI
+        </div>
+      )}
       <div
-        className={`max-w-[85%] rounded-(--radius) px-4 py-2.5 text-sm leading-relaxed ${
+        className={`max-w-[85%] rounded-[var(--radius)] px-4 py-2.5 text-sm leading-relaxed ${
           isUser
             ? "bg-primary text-primary-foreground"
-            : "bg-muted text-foreground"
+            : "bg-muted/60 text-foreground"
         }`}
       >
         {/* Tool indicators (assistant only) */}

@@ -23,12 +23,38 @@ interface Message {
   isStreaming: boolean;
 }
 
-type SessionData = {
-  status: "active" | "merging" | "none";
-  branchName?: string;
-  previewUrl?: string;
-  changes?: Array<{ file: string; description: string; timestamp: string }>;
-};
+// ── Chat history persistence (localStorage, keyed by branch name) ─────────────
+
+function storageKey(branchName: string) {
+  return `studio:chat:${branchName}`;
+}
+
+function loadMessages(branchName: string): Message[] {
+  try {
+    const raw = localStorage.getItem(storageKey(branchName));
+    if (!raw) return [];
+    const parsed = JSON.parse(raw) as Message[];
+    // Always reset isStreaming — avoids infinite spinners if page closed mid-stream
+    return parsed.map((m) => ({ ...m, isStreaming: false }));
+  } catch {
+    return [];
+  }
+}
+
+function saveMessages(branchName: string, messages: Message[]): void {
+  try {
+    const serialized = messages.map((m) => ({ ...m, isStreaming: false }));
+    localStorage.setItem(storageKey(branchName), JSON.stringify(serialized));
+  } catch {
+    // Silently ignore QuotaExceededError or sandboxed contexts
+  }
+}
+
+function clearMessages(branchName: string): void {
+  try {
+    localStorage.removeItem(storageKey(branchName));
+  } catch {}
+}
 
 // ── Helpers ───────────────────────────────────────────────────────────────────
 
@@ -49,23 +75,127 @@ function systemMessage(content: string): Message {
 // ── Component ─────────────────────────────────────────────────────────────────
 
 const WELCOME =
-  "Hi! I'm your content editing assistant. Tell me what you'd like to change on the site.";
+  "Hi! I'm your content editing assistant. What would you like to change on the site?";
 
 export function ChatInterface() {
   const [messages, setMessages] = useState<Message[]>([]);
-  const [session, setSession] = useState<SessionData | null>(null);
+  const [session, setSession] = useState<EditSession | null>(null);
   const [isLoading, setIsLoading] = useState(false);
   const bottomRef = useRef<HTMLDivElement>(null);
+  const isMountedRef = useRef(true);
+  // Ref so the persist effect can always read the latest session without
+  // adding session to its dependency array (which would cause extra writes).
+  const sessionRef = useRef<EditSession | null>(null);
+  // Tracks the last previewStatus reacted to — fires notifications exactly once per transition.
+  const prevPreviewStatusRef = useRef<string | null | undefined>(undefined);
 
-  // Fetch session on mount (user may have a session from a previous page visit)
+  useEffect(() => {
+    return () => {
+      isMountedRef.current = false;
+    };
+  }, []);
+
+  // Keep sessionRef in sync
+  useEffect(() => {
+    sessionRef.current = session;
+  }, [session]);
+
+  // Fetch session on mount (user may have a session from a previous page visit).
+  // Pre-seeds prevPreviewStatusRef with the initial status so the notification
+  // effect treats the page-load as a no-op and doesn't re-fire old notifications.
   useEffect(() => {
     fetch("/api/studio/session")
       .then((r) => r.json())
-      .then((data: SessionData) => {
-        if (data.status !== "none") setSession(data);
+      .then((data: EditSession) => {
+        if (data.status !== "none") {
+          prevPreviewStatusRef.current = data.previewStatus ?? null;
+          setSession(data);
+        } else {
+          prevPreviewStatusRef.current = null;
+        }
       })
-      .catch(() => {});
+      .catch(() => {
+        prevPreviewStatusRef.current = null;
+      });
   }, []);
+
+  // Restore chat history from localStorage whenever the branch name is first known.
+  // Fires when branchName transitions from undefined → an actual branch string.
+  useEffect(() => {
+    if (!session?.branchName) return;
+    const saved = loadMessages(session.branchName);
+    // eslint-disable-next-line react-hooks/set-state-in-effect
+    if (saved.length > 0) setMessages(saved);
+  }, [session?.branchName]);
+
+  // Persist messages to localStorage whenever they change (if a session is active).
+  // Uses sessionRef to avoid adding session to the dependency array.
+  useEffect(() => {
+    const branchName = sessionRef.current?.branchName;
+    if (!branchName || messages.length === 0) return;
+    saveMessages(branchName, messages);
+  }, [messages]);
+
+  // Poll /api/studio/session every 5 s while preview is building.
+  // React manages the interval lifetime via the cleanup return — no manual refs needed.
+  useEffect(() => {
+    if (session?.previewStatus !== "building") return;
+
+    const id = setInterval(async () => {
+      try {
+        const res = await fetch("/api/studio/session");
+        if (!res.ok) return;
+        const data = (await res.json()) as EditSession;
+        if (!isMountedRef.current) return;
+        setSession(data.status === "none" ? null : data);
+      } catch {
+        // ignore transient errors
+      }
+    }, 5000);
+
+    return () => clearInterval(id);
+  }, [session?.previewStatus]);
+
+  // Inject chat messages whenever the preview status transitions.
+  useEffect(() => {
+    const prev = prevPreviewStatusRef.current;
+    const curr = session?.previewStatus ?? null;
+    prevPreviewStatusRef.current = curr;
+
+    // Transition → building
+    if (curr === "building" && prev !== "building") {
+      // eslint-disable-next-line react-hooks/set-state-in-effect
+      setMessages((m) => [
+        ...m,
+        systemMessage(
+          "Your changes are saved. Generating a preview — this usually takes 30–60 seconds.",
+        ),
+      ]);
+    }
+
+    // Transition → ready (from any previous state, not just "building").
+    // The deployment can complete before the agent finishes, so previewStatus
+    // may jump from null directly to "ready" without ever being "building" in
+    // React state.
+    if (curr === "ready" && session?.previewUrl && prev !== "ready") {
+      setMessages((m) => [
+        ...m,
+        systemMessage(
+          `Preview ready! [View your changes ↗](${session.previewUrl})`,
+        ),
+      ]);
+    }
+
+    // Transition → error (from any previous state)
+    if (curr === "error" && prev !== "error") {
+      setMessages((m) => [
+        ...m,
+        systemMessage(
+          "Preview couldn't be generated, but your changes are saved. You can still approve or discard.",
+        ),
+      ]);
+    }
+  }, [session?.previewStatus, session?.previewUrl]);
 
   // Auto-scroll on message changes
   useEffect(() => {
@@ -126,11 +256,14 @@ export function ChatInterface() {
         );
       },
 
+      onSessionUpdate(newSession) {
+        setSession(newSession as EditSession);
+      },
+
       onToolResult(name, summary) {
         setMessages((prev) =>
           prev.map((m) => {
             if (m.id !== assistantId) return m;
-            // Update the last loading tool call with this name
             let patched = false;
             const toolCalls = [...m.toolCalls]
               .reverse()
@@ -154,7 +287,7 @@ export function ChatInterface() {
           ),
         );
         if (newSession && newSession.status === "active") {
-          setSession(newSession as SessionData);
+          setSession(newSession);
         }
         setIsLoading(false);
       },
@@ -177,16 +310,20 @@ export function ChatInterface() {
   }
 
   function handleApproved() {
+    const branchName = sessionRef.current?.branchName;
+    if (branchName) clearMessages(branchName);
     setSession(null);
     setMessages((prev) => [
       ...prev,
       systemMessage(
-        "Changes published! The site will update in about 1 minute. Feel free to continue editing or start a new conversation.",
+        "Changes published! The site will update in about 1 minute. Feel free to start a new conversation.",
       ),
     ]);
   }
 
   function handleDiscarded() {
+    const branchName = sessionRef.current?.branchName;
+    if (branchName) clearMessages(branchName);
     setSession(null);
     setMessages((prev) => [
       ...prev,
@@ -194,10 +331,16 @@ export function ChatInterface() {
     ]);
   }
 
+  function handleNewChat() {
+    const branchName = sessionRef.current?.branchName;
+    if (branchName) clearMessages(branchName);
+    setMessages([]);
+  }
+
   const isEmpty = messages.length === 0;
 
   return (
-    <div className="mx-auto flex min-h-0 w-full max-w-3xl flex-1 flex-col">
+    <div className="bg-background border-muted/60 flex min-h-0 flex-1 flex-col overflow-hidden rounded-[var(--radius)] border shadow-sm">
       {/* Session banner */}
       {session && (
         <div className="shrink-0 px-4 pt-3">
@@ -211,9 +354,25 @@ export function ChatInterface() {
 
       {/* Messages area */}
       <div className="flex-1 overflow-y-auto px-4 py-4">
+        {/* New chat button — shown only when there's history to clear */}
+        {!isEmpty && (
+          <div className="mb-3 flex justify-end">
+            <button
+              onClick={handleNewChat}
+              disabled={isLoading}
+              className="text-muted-foreground hover:text-foreground cursor-pointer text-xs transition-colors disabled:cursor-not-allowed disabled:opacity-40"
+            >
+              + New chat
+            </button>
+          </div>
+        )}
+
         {isEmpty ? (
           <div className="flex h-full items-center justify-center">
             <div className="max-w-xs text-center">
+              <div className="bg-primary/10 text-primary mx-auto mb-4 flex h-10 w-10 items-center justify-center rounded-full text-sm font-semibold">
+                AI
+              </div>
               <p className="text-foreground/70 text-base">{WELCOME}</p>
             </div>
           </div>

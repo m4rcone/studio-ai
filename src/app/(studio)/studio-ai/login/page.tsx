@@ -14,14 +14,11 @@ export default async function LoginPage() {
               {config.brand.name}
             </p>
             <h1 className="font-heading text-foreground text-2xl">Studio AI</h1>
-            <p className="text-muted-foreground mt-1 text-sm">
-              {config.brand.tagline}
-            </p>
           </div>
         </div>
 
         {/* Form card */}
-        <div className="bg-background border-muted rounded-(--radius) border p-6 shadow-sm">
+        <div className="bg-background border-muted rounded-[var(--radius)] border p-6 shadow-sm">
           <LoginForm />
         </div>
       </div>

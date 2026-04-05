@@ -10,7 +10,7 @@ export default function NotFound() {
       <p className="text-muted-foreground">{s.description}</p>
       <Link
         href="/"
-        className="bg-primary text-primary-foreground rounded-(--radius) px-6 py-2 text-sm font-medium transition-opacity hover:opacity-90"
+        className="bg-primary text-primary-foreground rounded-[var(--radius)] px-6 py-2 text-sm font-medium transition-opacity hover:opacity-90"
       >
         {s.back}
       </Link>

@@ -37,7 +37,7 @@ export function Features({ headline, subheadline, items }: FeaturesProps) {
           {items.map((item) => (
             <li
               key={item.id}
-              className="border-foreground/10 bg-muted flex flex-col gap-3 rounded-(--radius) border p-6"
+              className="border-foreground/10 bg-muted flex flex-col gap-3 rounded-[var(--radius)] border p-6"
             >
               {item.icon && (
                 <span className="text-3xl leading-none" aria-hidden="true">
