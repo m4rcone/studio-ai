@@ -281,7 +281,7 @@ The site includes an embedded AI-powered content editing studio at `/studio-ai`.
 - `src/components/studio/` — studio UI components
 - `src/app/(studio)/` — studio pages (route group, does not affect public URLs)
 - `src/app/api/studio/` — studio API routes
-- `src/proxy.ts` — Next.js proxy (formerly middleware) — protects studio routes with JWT auth
+- `src/proxy.ts` — Next.js 16 proxy (replaces middleware.ts) — protects studio routes with JWT auth
 
 ### Environment variables required
 
@@ -303,6 +303,8 @@ See `.env.local`. Required vars:
 - Session state is in-memory — it resets on server restart (acceptable for MVP)
 - The studio uses route group `(studio)` — URLs start with `/studio-ai`, `src/proxy.ts` protects all routes except `/studio-ai/login` and `/api/studio/auth`
 - The chat API (`/api/studio/chat`) enforces a 50-message / 100 KB payload limit per request
+- System-injected messages (preview transitions, approve/discard notifications) use `isSystem: true` in the `Message` interface — they are excluded from the API history sent to Anthropic (avoids consecutive same-role errors) and from localStorage persistence (re-generated on load)
+- `handleNewChat` always discards the active server session (branch + PR) before clearing local state — never leave orphaned branches
 - Logging conventions: use `console.warn` for recoverable degraded states (e.g., missing guide files); use `console.error` for unexpected failures (e.g., tool input parse errors); do not leave `console.log` in server-side code
 
 ---
