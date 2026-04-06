@@ -179,6 +179,8 @@ interface ChatMessageProps {
   toolCalls?: ToolCallStatus[];
   isStreaming?: boolean;
   isError?: boolean;
+  isSystem?: boolean;
+  onRetry?: () => void;
 }
 
 export function ChatMessage({
@@ -187,8 +189,21 @@ export function ChatMessage({
   toolCalls = [],
   isStreaming,
   isError,
+  isSystem,
+  onRetry,
 }: ChatMessageProps) {
   const isUser = role === "user";
+
+  // System messages render as centered dividers (not chat bubbles)
+  if (isSystem) {
+    return (
+      <div className="my-3 flex items-center gap-3">
+        <div className="bg-muted/40 h-px flex-1" />
+        <p className="text-muted-foreground text-xs">{parseInline(content)}</p>
+        <div className="bg-muted/40 h-px flex-1" />
+      </div>
+    );
+  }
 
   return (
     <div className={`flex ${isUser ? "justify-end" : "justify-start"} mb-3`}>
@@ -226,12 +241,9 @@ export function ChatMessage({
           isUser ? (
             <p className="whitespace-pre-wrap">{content}</p>
           ) : (
-            <div className="relative">
-              {renderMarkdown(content)}
-              {isStreaming && (
-                <span className="ml-0.5 inline-block h-[1em] w-0.5 animate-pulse bg-current align-text-bottom opacity-70" />
-              )}
-            </div>
+            // Append the cursor character to the content string so it renders
+            // inline at the end of the last paragraph, not as a separate element.
+            <div>{renderMarkdown(isStreaming ? content + "▌" : content)}</div>
           )
         ) : isStreaming ? (
           /* Typing indicator — shown while waiting for first token */
@@ -250,6 +262,16 @@ export function ChatMessage({
             />
           </div>
         ) : null}
+
+        {/* Retry button for error messages */}
+        {isError && onRetry && (
+          <button
+            onClick={onRetry}
+            className="mt-2 cursor-pointer text-xs font-medium text-red-600 underline underline-offset-2 hover:text-red-700"
+          >
+            Try again
+          </button>
+        )}
       </div>
     </div>
   );
