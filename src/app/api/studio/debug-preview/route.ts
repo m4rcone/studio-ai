@@ -65,8 +65,6 @@ export async function GET(): Promise<Response> {
   );
   const checks = await checksRes.json();
 
-  const bypass = env.vercel.bypassSecret;
-
   return Response.json({
     branch,
     sha,
@@ -74,14 +72,6 @@ export async function GET(): Promise<Response> {
       previewStatus: session.previewStatus,
       previewUrl: session.previewUrl,
       prNumber: session.prNumber,
-    },
-    bypass: {
-      configured: bypass.length > 0,
-      // Show only the first 6 chars so you can confirm the value without exposing it fully
-      hint:
-        bypass.length > 0
-          ? `${bypass.slice(0, 6)}… (${bypass.length} chars)`
-          : null,
     },
     deployments: deploymentDetails,
     checkRuns: (checks as { check_runs?: unknown[] }).check_runs ?? [],

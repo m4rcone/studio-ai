@@ -25,6 +25,8 @@ interface Message {
 
 // ── Chat history persistence (localStorage, keyed by branch name) ─────────────
 
+const ACTIVE_BRANCH_KEY = "studio:active-branch";
+
 function storageKey(branchName: string) {
   return `studio:chat:${branchName}`;
 }
@@ -53,6 +55,29 @@ function saveMessages(branchName: string, messages: Message[]): void {
 function clearMessages(branchName: string): void {
   try {
     localStorage.removeItem(storageKey(branchName));
+  } catch {}
+}
+
+/** Saves the active branch name so chat history can be restored after a server restart. */
+function saveActiveBranch(branchName: string): void {
+  try {
+    localStorage.setItem(ACTIVE_BRANCH_KEY, branchName);
+  } catch {}
+}
+
+/** Returns the last known active branch name, or null if none. */
+function loadActiveBranch(): string | null {
+  try {
+    return localStorage.getItem(ACTIVE_BRANCH_KEY);
+  } catch {
+    return null;
+  }
+}
+
+/** Clears the saved active branch (called on approve / discard / new chat). */
+function clearActiveBranch(): void {
+  try {
+    localStorage.removeItem(ACTIVE_BRANCH_KEY);
   } catch {}
 }
 
@@ -103,15 +128,27 @@ export function ChatInterface() {
   // Fetch session on mount (user may have a session from a previous page visit).
   // Pre-seeds prevPreviewStatusRef with the initial status so the notification
   // effect treats the page-load as a no-op and doesn't re-fire old notifications.
+  //
+  // If the server returns "none" (e.g. after a serverless cold start that wiped
+  // the in-memory session), we fall back to the last known branchName stored in
+  // localStorage so chat history is still visible.
   useEffect(() => {
     fetch("/api/studio/session")
       .then((r) => r.json())
       .then((data: EditSession) => {
         if (data.status !== "none") {
           prevPreviewStatusRef.current = data.previewStatus ?? null;
+          saveActiveBranch(data.branchName);
           setSession(data);
         } else {
           prevPreviewStatusRef.current = null;
+          // Server lost the session (cold start) — restore history from localStorage
+          // using the last known branch name so the user doesn't lose their context.
+          const savedBranch = loadActiveBranch();
+          if (savedBranch) {
+            const saved = loadMessages(savedBranch);
+            if (saved.length > 0) setMessages(saved);
+          }
         }
       })
       .catch(() => {
@@ -312,6 +349,7 @@ export function ChatInterface() {
   function handleApproved() {
     const branchName = sessionRef.current?.branchName;
     if (branchName) clearMessages(branchName);
+    clearActiveBranch();
     setSession(null);
     setMessages((prev) => [
       ...prev,
@@ -324,6 +362,7 @@ export function ChatInterface() {
   function handleDiscarded() {
     const branchName = sessionRef.current?.branchName;
     if (branchName) clearMessages(branchName);
+    clearActiveBranch();
     setSession(null);
     setMessages((prev) => [
       ...prev,
@@ -334,6 +373,7 @@ export function ChatInterface() {
   function handleNewChat() {
     const branchName = sessionRef.current?.branchName;
     if (branchName) clearMessages(branchName);
+    clearActiveBranch();
     setMessages([]);
   }
 

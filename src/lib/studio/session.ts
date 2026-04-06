@@ -7,7 +7,6 @@ import {
   closePullRequest,
   waitForPreviewUrl,
 } from "./github";
-import { env } from "./env";
 import type { EditSession, ChangeRecord } from "./types";
 
 // ---------------------------------------------------------------------------
@@ -80,12 +79,7 @@ function pollPreviewUrl(username: string, prNumber: number): void {
       const session = sessions.get(username);
       if (!session) return;
       if (url) {
-        // Append the Vercel bypass token when configured so clients can open
-        // the preview URL without needing a Vercel account.
-        const bypass = env.vercel.bypassSecret;
-        session.previewUrl = bypass
-          ? `${url}?x-vercel-protection-bypass=${bypass}&x-vercel-set-bypass-cookie=1`
-          : url;
+        session.previewUrl = url;
         session.previewStatus = "ready";
       } else {
         session.previewStatus = "error";
