@@ -55,7 +55,7 @@ export function LoginForm() {
           required
           value={username}
           onChange={(e) => setUsername(e.target.value)}
-          placeholder="your-username"
+          placeholder="username"
           className={inputClass}
         />
       </div>

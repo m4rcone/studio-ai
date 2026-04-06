@@ -71,41 +71,71 @@ async function* parseSSE(
 
 // ---------------------------------------------------------------------------
 // Single Anthropic API call (always streaming)
+// Retries automatically on 429 rate-limit responses with exponential backoff.
 // ---------------------------------------------------------------------------
+
+const RATE_LIMIT_RETRIES = 3;
+const RATE_LIMIT_DELAYS_MS = [5_000, 15_000, 30_000];
 
 async function callAnthropic(
   messages: AnthropicMessage[],
   systemPrompt: string,
 ): Promise<Response> {
-  const res = await fetch("https://api.anthropic.com/v1/messages", {
-    method: "POST",
-    headers: {
-      "x-api-key": env.anthropic.apiKey,
-      "anthropic-version": "2023-06-01",
-      "content-type": "application/json",
-    },
-    body: JSON.stringify({
-      model: MODEL,
-      max_tokens: MAX_TOKENS,
-      system: systemPrompt,
-      messages,
-      tools: STUDIO_TOOLS,
-      stream: true,
-    }),
+  const body = JSON.stringify({
+    model: MODEL,
+    max_tokens: MAX_TOKENS,
+    system: systemPrompt,
+    messages,
+    tools: STUDIO_TOOLS,
+    stream: true,
   });
 
-  if (!res.ok) {
-    let msg = `Anthropic API error ${res.status}`;
+  const headers = {
+    "x-api-key": env.anthropic.apiKey,
+    "anthropic-version": "2023-06-01",
+    "content-type": "application/json",
+  };
+
+  for (let attempt = 0; attempt <= RATE_LIMIT_RETRIES; attempt++) {
+    const res = await fetch("https://api.anthropic.com/v1/messages", {
+      method: "POST",
+      headers,
+      body,
+    });
+
+    if (res.ok) return res;
+
+    // Extract error message from response body
+    let apiMessage = "";
     try {
-      const body = (await res.json()) as { error?: { message?: string } };
-      if (body.error?.message) msg += `: ${body.error.message}`;
+      const errBody = (await res.clone().json()) as {
+        error?: { message?: string };
+      };
+      apiMessage = errBody.error?.message ?? "";
     } catch {
-      // ignore
+      // ignore parse errors
     }
-    throw new Error(msg);
+
+    if (res.status === 429 && attempt < RATE_LIMIT_RETRIES) {
+      const delayMs = RATE_LIMIT_DELAYS_MS[attempt]!;
+      console.warn(
+        `[studio] 429 rate limit hit, retry ${attempt + 1}/${RATE_LIMIT_RETRIES} in ${delayMs / 1000}s`,
+      );
+      await new Promise((resolve) => setTimeout(resolve, delayMs));
+      continue;
+    }
+
+    // Non-retryable error or retries exhausted
+    const userMessage =
+      res.status === 429
+        ? "Rate limit reached. Please wait a moment and try again."
+        : `Anthropic API error ${res.status}${apiMessage ? `: ${apiMessage}` : ""}`;
+
+    throw new Error(userMessage);
   }
 
-  return res;
+  // Unreachable, but satisfies TypeScript
+  throw new Error("Unexpected error calling Anthropic API.");
 }
 
 // ---------------------------------------------------------------------------
@@ -269,10 +299,9 @@ export async function runAgent(params: {
   return new ReadableStream({
     async start(controller) {
       const push = makeEncoder(controller);
+      let iteration = 0;
 
       try {
-        let iteration = 0;
-
         while (iteration < MAX_ITERATIONS) {
           iteration++;
 
@@ -338,6 +367,10 @@ export async function runAgent(params: {
       } catch (err) {
         const message =
           err instanceof Error ? err.message : "An unexpected error occurred.";
+        console.error(
+          `[studio] Agent error for user "${username}" at iteration ${iteration}:`,
+          err,
+        );
         push({ type: "error", message });
       } finally {
         controller.close();
