@@ -134,6 +134,33 @@ export function getSession(username: string): EditSession | null {
 }
 
 /**
+ * Restores a session from client-provided snapshot (e.g. after a serverless cold start).
+ * No-ops if the user already has an active session in memory.
+ * If the session was mid-poll (previewStatus "building"), resumes the polling loop.
+ */
+export function restoreSession(
+  username: string,
+  snapshot: EditSession,
+): EditSession {
+  const existing = sessions.get(username);
+  if (existing) return existing;
+
+  const session: EditSession = { ...snapshot };
+  sessions.set(username, session);
+
+  // Resume preview polling if it hadn't resolved yet
+  if (
+    session.status === "active" &&
+    session.previewStatus === "building" &&
+    session.prNumber > 0
+  ) {
+    pollPreviewUrl(username, session.prNumber);
+  }
+
+  return session;
+}
+
+/**
  * Appends a change record to the session.
  * On the first change: opens a Pull Request and starts polling for the preview URL.
  * On subsequent changes: updates the PR body with the cumulative change list.

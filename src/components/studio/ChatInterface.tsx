@@ -81,6 +81,32 @@ function clearActiveBranch(): void {
   } catch {}
 }
 
+const SESSION_SNAPSHOT_KEY = "studio:session-snapshot";
+
+/** Persists the full session object so it can be re-hydrated after a cold start. */
+function saveSessionSnapshot(session: EditSession): void {
+  try {
+    localStorage.setItem(SESSION_SNAPSHOT_KEY, JSON.stringify(session));
+  } catch {}
+}
+
+/** Returns the last persisted session snapshot, or null if none. */
+function loadSessionSnapshot(): EditSession | null {
+  try {
+    const raw = localStorage.getItem(SESSION_SNAPSHOT_KEY);
+    return raw ? (JSON.parse(raw) as EditSession) : null;
+  } catch {
+    return null;
+  }
+}
+
+/** Clears the session snapshot (called on approve / discard / new chat). */
+function clearSessionSnapshot(): void {
+  try {
+    localStorage.removeItem(SESSION_SNAPSHOT_KEY);
+  } catch {}
+}
+
 // ── Helpers ───────────────────────────────────────────────────────────────────
 
 function makeId() {
@@ -120,9 +146,13 @@ export function ChatInterface() {
     };
   }, []);
 
-  // Keep sessionRef in sync
+  // Keep sessionRef in sync and persist snapshot to localStorage.
   useEffect(() => {
     sessionRef.current = session;
+    if (session?.status === "active") {
+      saveSessionSnapshot(session);
+      saveActiveBranch(session.branchName);
+    }
   }, [session]);
 
   // Fetch session on mount (user may have a session from a previous page visit).
@@ -130,30 +160,59 @@ export function ChatInterface() {
   // effect treats the page-load as a no-op and doesn't re-fire old notifications.
   //
   // If the server returns "none" (e.g. after a serverless cold start that wiped
-  // the in-memory session), we fall back to the last known branchName stored in
-  // localStorage so chat history is still visible.
+  // the in-memory session Map), we try to restore both the session and the chat
+  // history from localStorage snapshots so the user's state is fully recovered.
   useEffect(() => {
-    fetch("/api/studio/session")
-      .then((r) => r.json())
-      .then((data: EditSession) => {
+    async function initSession() {
+      try {
+        const res = await fetch("/api/studio/session");
+        const data = (await res.json()) as EditSession;
+
         if (data.status !== "none") {
+          // Server has the session — normal path.
           prevPreviewStatusRef.current = data.previewStatus ?? null;
           saveActiveBranch(data.branchName);
+          saveSessionSnapshot(data);
           setSession(data);
-        } else {
-          prevPreviewStatusRef.current = null;
-          // Server lost the session (cold start) — restore history from localStorage
-          // using the last known branch name so the user doesn't lose their context.
-          const savedBranch = loadActiveBranch();
-          if (savedBranch) {
-            const saved = loadMessages(savedBranch);
-            if (saved.length > 0) setMessages(saved);
+          return;
+        }
+
+        // Server lost the session (cold start). Try to restore from localStorage.
+        prevPreviewStatusRef.current = null;
+        const snapshot = loadSessionSnapshot();
+
+        if (snapshot?.status === "active" && snapshot.branchName) {
+          // Re-hydrate the server-side in-memory session from our snapshot.
+          try {
+            const restoreRes = await fetch("/api/studio/session/restore", {
+              method: "POST",
+              headers: { "Content-Type": "application/json" },
+              body: JSON.stringify(snapshot),
+            });
+            if (restoreRes.ok) {
+              const restored = (await restoreRes.json()) as EditSession;
+              prevPreviewStatusRef.current = restored.previewStatus ?? null;
+              setSession(restored);
+              // Chat history will be loaded by the branchName effect below.
+              return;
+            }
+          } catch {
+            // Restore failed — fall through to history-only recovery.
           }
         }
-      })
-      .catch(() => {
+
+        // Restore failed or no snapshot — at minimum recover chat history.
+        const savedBranch = loadActiveBranch();
+        if (savedBranch) {
+          const saved = loadMessages(savedBranch);
+          if (saved.length > 0) setMessages(saved);
+        }
+      } catch {
         prevPreviewStatusRef.current = null;
-      });
+      }
+    }
+
+    void initSession();
   }, []);
 
   // Restore chat history from localStorage whenever the branch name is first known.
@@ -350,6 +409,7 @@ export function ChatInterface() {
     const branchName = sessionRef.current?.branchName;
     if (branchName) clearMessages(branchName);
     clearActiveBranch();
+    clearSessionSnapshot();
     setSession(null);
     setMessages((prev) => [
       ...prev,
@@ -363,6 +423,7 @@ export function ChatInterface() {
     const branchName = sessionRef.current?.branchName;
     if (branchName) clearMessages(branchName);
     clearActiveBranch();
+    clearSessionSnapshot();
     setSession(null);
     setMessages((prev) => [
       ...prev,
@@ -374,6 +435,7 @@ export function ChatInterface() {
     const branchName = sessionRef.current?.branchName;
     if (branchName) clearMessages(branchName);
     clearActiveBranch();
+    clearSessionSnapshot();
     setMessages([]);
   }
 
