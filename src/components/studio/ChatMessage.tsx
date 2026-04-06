@@ -178,6 +178,7 @@ interface ChatMessageProps {
   content: string;
   toolCalls?: ToolCallStatus[];
   isStreaming?: boolean;
+  isError?: boolean;
 }
 
 export function ChatMessage({
@@ -185,6 +186,7 @@ export function ChatMessage({
   content,
   toolCalls = [],
   isStreaming,
+  isError,
 }: ChatMessageProps) {
   const isUser = role === "user";
 
@@ -194,16 +196,20 @@ export function ChatMessage({
         <div
           role="img"
           aria-label="AI assistant"
-          className="bg-primary/10 text-primary mt-0.5 mr-2 flex h-6 w-6 shrink-0 items-center justify-center rounded-full text-[10px] font-semibold"
+          className={`mt-0.5 mr-2 flex h-6 w-6 shrink-0 items-center justify-center rounded-full text-[10px] font-semibold ${
+            isError ? "bg-red-100 text-red-600" : "bg-primary/10 text-primary"
+          }`}
         >
-          AI
+          {isError ? "!" : "AI"}
         </div>
       )}
       <div
         className={`max-w-[85%] rounded-[var(--radius)] px-4 py-2.5 text-sm leading-relaxed ${
           isUser
             ? "bg-primary text-primary-foreground"
-            : "bg-muted/60 text-foreground"
+            : isError
+              ? "border border-red-200 bg-red-50 text-red-700"
+              : "bg-muted/60 text-foreground"
         }`}
       >
         {/* Tool indicators (assistant only) */}
@@ -220,10 +226,15 @@ export function ChatMessage({
           isUser ? (
             <p className="whitespace-pre-wrap">{content}</p>
           ) : (
-            <div>{renderMarkdown(content)}</div>
+            <div className="relative">
+              {renderMarkdown(content)}
+              {isStreaming && (
+                <span className="ml-0.5 inline-block h-[1em] w-0.5 animate-pulse bg-current align-text-bottom opacity-70" />
+              )}
+            </div>
           )
         ) : isStreaming ? (
-          /* Typing indicator */
+          /* Typing indicator — shown while waiting for first token */
           <div className="flex items-center gap-1 py-0.5">
             <span
               className="h-1.5 w-1.5 animate-bounce rounded-full bg-current opacity-60"

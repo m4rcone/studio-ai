@@ -28,7 +28,10 @@ export async function sendMessage(
     res = await fetch("/api/studio/chat", {
       method: "POST",
       headers: { "Content-Type": "application/json" },
-      body: JSON.stringify({ messages, sessionSnapshot: sessionSnapshot ?? null }),
+      body: JSON.stringify({
+        messages,
+        sessionSnapshot: sessionSnapshot ?? null,
+      }),
     });
   } catch (err) {
     callbacks.onError(
@@ -108,9 +111,7 @@ export async function sendMessage(
     }
   } catch (err) {
     callbacks.onError(
-      err instanceof Error
-        ? err.message
-        : "Connection lost. Please try again.",
+      err instanceof Error ? err.message : "Connection lost. Please try again.",
     );
   } finally {
     reader.releaseLock();

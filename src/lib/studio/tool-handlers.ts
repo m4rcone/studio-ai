@@ -111,16 +111,9 @@ async function commitJson(
     timestamp: new Date().toISOString(),
   });
 
-  const updated = session.getSession(username)!;
-  const isFirst = updated.changes.length === 1;
-
-  if (isFirst) {
-    return "A preview is being generated and will be ready in about 30–60 seconds.";
-  }
-  if (updated.previewStatus === "ready" && updated.previewUrl) {
-    return `Preview your changes at: ${updated.previewUrl}`;
-  }
-  return "The preview is updating automatically with your changes.";
+  // Return empty — preview notifications are handled by the UI via session_update
+  // stream events. The agent should not mention preview status in its response.
+  return "";
 }
 
 // ---------------------------------------------------------------------------

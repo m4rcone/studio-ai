@@ -21,6 +21,7 @@ interface Message {
   content: string;
   toolCalls: ToolCallStatus[];
   isStreaming: boolean;
+  isError?: boolean;
 }
 
 // ── Chat history persistence (localStorage, keyed by branch name) ─────────────
@@ -211,7 +212,6 @@ export function ChatInterface() {
     }
 
     void initSession();
-    // eslint-disable-next-line react-hooks/exhaustive-deps
   }, []);
 
   // Restore chat history from localStorage whenever the branch name is first known.
@@ -247,7 +247,6 @@ export function ChatInterface() {
     }, 5000);
 
     return () => clearInterval(id);
-    // eslint-disable-next-line react-hooks/exhaustive-deps
   }, [session?.previewStatus]);
 
   // Inject chat messages whenever the preview status transitions.
@@ -325,83 +324,95 @@ export function ChatInterface() {
     setMessages((prev) => [...prev, userMsg, assistantMsg]);
     setIsLoading(true);
 
-    await sendMessage(apiHistory, {
-      onTextChunk(chunk) {
-        setMessages((prev) =>
-          prev.map((m) =>
-            m.id === assistantId ? { ...m, content: m.content + chunk } : m,
-          ),
-        );
-      },
+    await sendMessage(
+      apiHistory,
+      {
+        onTextChunk(chunk) {
+          setMessages((prev) =>
+            prev.map((m) =>
+              m.id === assistantId ? { ...m, content: m.content + chunk } : m,
+            ),
+          );
+        },
 
-      onToolCall(name) {
-        setMessages((prev) =>
-          prev.map((m) =>
-            m.id === assistantId
-              ? {
-                  ...m,
-                  toolCalls: [
-                    ...m.toolCalls,
-                    { name, status: "loading" as const },
-                  ],
-                }
-              : m,
-          ),
-        );
-      },
+        onToolCall(name) {
+          setMessages((prev) =>
+            prev.map((m) =>
+              m.id === assistantId
+                ? {
+                    ...m,
+                    toolCalls: [
+                      ...m.toolCalls,
+                      { name, status: "loading" as const },
+                    ],
+                  }
+                : m,
+            ),
+          );
+        },
 
-      onSessionUpdate(newSession) {
-        setSession(newSession as EditSession);
-      },
+        onSessionUpdate(newSession) {
+          setSession(newSession as EditSession);
+        },
 
-      onToolResult(name, summary) {
-        setMessages((prev) =>
-          prev.map((m) => {
-            if (m.id !== assistantId) return m;
-            let patched = false;
-            const toolCalls = [...m.toolCalls]
-              .reverse()
-              .map((tc) => {
-                if (!patched && tc.name === name && tc.status === "loading") {
-                  patched = true;
-                  return { ...tc, status: "done" as const, summary };
-                }
-                return tc;
-              })
-              .reverse();
-            return { ...m, toolCalls };
-          }),
-        );
-      },
+        onToolResult(name, summary) {
+          setMessages((prev) =>
+            prev.map((m) => {
+              if (m.id !== assistantId) return m;
+              let patched = false;
+              const toolCalls = [...m.toolCalls]
+                .reverse()
+                .map((tc) => {
+                  if (!patched && tc.name === name && tc.status === "loading") {
+                    patched = true;
+                    return { ...tc, status: "done" as const, summary };
+                  }
+                  return tc;
+                })
+                .reverse();
+              return { ...m, toolCalls };
+            }),
+          );
+        },
 
-      onDone(newSession: EditSession | null) {
-        setMessages((prev) =>
-          prev.map((m) =>
-            m.id === assistantId ? { ...m, isStreaming: false } : m,
-          ),
-        );
-        if (newSession && newSession.status === "active") {
-          setSession(newSession);
-        }
-        setIsLoading(false);
-      },
+        onDone(newSession: EditSession | null) {
+          setMessages((prev) =>
+            prev.map((m) =>
+              m.id === assistantId ? { ...m, isStreaming: false } : m,
+            ),
+          );
+          if (newSession && newSession.status === "active") {
+            setSession(newSession);
+          }
+          setIsLoading(false);
+        },
 
-      onError(error) {
-        setMessages((prev) =>
-          prev.map((m) => {
-            if (m.id !== assistantId) return m;
-            // Append the error notice after any partial content that was streamed.
-            const notice = `\n\n_${error}_`;
-            return {
-              ...m,
-              content: m.content ? m.content + notice : `Something went wrong: ${error}`,
-              isStreaming: false,
-            };
-          }),
-        );
-        setIsLoading(false);
+        onError(error) {
+          // Stop streaming on the assistant message (keep any partial content as-is).
+          // Inject the error as a separate system message so it's visually distinct.
+          setMessages((prev) => {
+            const stopped = prev.map((m) =>
+              m.id === assistantId ? { ...m, isStreaming: false } : m,
+            );
+            // Only add error message if it's meaningful (not an empty-content interruption
+            // where the user already sees a blank bubble — replace that bubble instead).
+            const assistantMsg = stopped.find((m) => m.id === assistantId);
+            if (assistantMsg && !assistantMsg.content) {
+              // Bubble is empty — show the error in place of the bubble.
+              return stopped.map((m) =>
+                m.id === assistantId
+                  ? { ...m, content: error, isStreaming: false }
+                  : m,
+              );
+            }
+            // Bubble has content — add a separate error message after it.
+            return [...stopped, { ...systemMessage(error), isError: true }];
+          });
+          setIsLoading(false);
+        },
       },
-    }, sessionRef.current);
+      sessionRef.current,
+    );
   }
 
   function handleApproved() {
@@ -486,9 +497,35 @@ export function ChatInterface() {
                 content={m.content}
                 toolCalls={m.toolCalls}
                 isStreaming={m.isStreaming}
+                isError={m.isError}
               />
             ))}
           </>
+        )}
+        {/* Processing indicator — shown while the agent is running and has not
+            yet emitted the streaming message (e.g. waiting for the first token). */}
+        {isLoading && messages.every((m) => !m.isStreaming) && (
+          <div className="mb-3 flex justify-start">
+            <div className="bg-primary/10 text-primary mt-0.5 mr-2 flex h-6 w-6 shrink-0 items-center justify-center rounded-full text-[10px] font-semibold">
+              AI
+            </div>
+            <div className="bg-muted/60 rounded-[var(--radius)] px-4 py-3">
+              <div className="flex items-center gap-1">
+                <span
+                  className="h-1.5 w-1.5 animate-bounce rounded-full bg-current opacity-60"
+                  style={{ animationDelay: "0ms" }}
+                />
+                <span
+                  className="h-1.5 w-1.5 animate-bounce rounded-full bg-current opacity-60"
+                  style={{ animationDelay: "150ms" }}
+                />
+                <span
+                  className="h-1.5 w-1.5 animate-bounce rounded-full bg-current opacity-60"
+                  style={{ animationDelay: "300ms" }}
+                />
+              </div>
+            </div>
+          </div>
         )}
         <div ref={bottomRef} />
       </div>
