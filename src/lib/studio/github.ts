@@ -291,8 +291,20 @@ export async function getPreviewUrlFromPR(
         run.conclusion === "success"
       ) {
         const summary = run.output.summary ?? "";
-        const match = summary.match(/https:\/\/[^\s)"'<>]+\.vercel\.app/);
-        if (match) return match[0];
+
+        // Strategy 2a: direct *.vercel.app deployment URL (preferred)
+        // Excludes vercel.live wrapper URLs which are NOT actual deployments.
+        const directMatch = summary.match(
+          /https:\/\/(?!vercel\.live)[^\s)"'<>]+\.vercel\.app/,
+        );
+        if (directMatch) return directMatch[0];
+
+        // Strategy 2b: Vercel wraps preview URLs inside vercel.live/open-feedback/<hostname>
+        // Extract the deployment hostname from that wrapper URL.
+        const liveMatch = summary.match(
+          /vercel\.live\/open-feedback\/([^\s?)"'<>]+\.vercel\.app)/,
+        );
+        if (liveMatch) return `https://${liveMatch[1]}`;
       }
     }
   }
