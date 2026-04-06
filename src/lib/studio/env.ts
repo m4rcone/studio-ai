@@ -42,6 +42,13 @@ export const env = {
     studioUsers: parseStudioUsers(require("STUDIO_USERS")),
     studioPassword: require("STUDIO_PASSWORD"),
   },
+  vercel: {
+    // Generate at: Vercel → Project Settings → Deployment Protection
+    // → Protection Bypass for Automation.
+    // When set, preview URLs include the bypass token so anyone with the link
+    // can view the preview without a Vercel account or org login.
+    bypassSecret: optional("VERCEL_BYPASS_SECRET", ""),
+  },
 } as const;
 
 export type Env = typeof env;

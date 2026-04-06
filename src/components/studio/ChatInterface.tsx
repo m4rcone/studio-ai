@@ -155,57 +155,55 @@ export function ChatInterface() {
     }
   }, [session]);
 
-  // Fetch session on mount (user may have a session from a previous page visit).
-  // Pre-seeds prevPreviewStatusRef with the initial status so the notification
-  // effect treats the page-load as a no-op and doesn't re-fire old notifications.
-  //
-  // If the server returns "none" (e.g. after a serverless cold start that wiped
-  // the in-memory session Map), we try to restore both the session and the chat
-  // history from localStorage snapshots so the user's state is fully recovered.
+  // Fetches the active session from the server, restoring from localStorage if
+  // the server has lost it (cold start). Returns null if no session exists.
+  // Used by both the mount effect and the polling interval.
+  async function fetchOrRestoreSession(): Promise<EditSession | null> {
+    const res = await fetch("/api/studio/session");
+    if (!res.ok) return null;
+    const data = (await res.json()) as EditSession;
+
+    if (data.status !== "none") return data;
+
+    // Server has no session — try to restore from the localStorage snapshot.
+    const snapshot = loadSessionSnapshot();
+    if (snapshot?.status === "active" && snapshot.branchName) {
+      try {
+        const restoreRes = await fetch("/api/studio/session/restore", {
+          method: "POST",
+          headers: { "Content-Type": "application/json" },
+          body: JSON.stringify(snapshot),
+        });
+        if (restoreRes.ok) return (await restoreRes.json()) as EditSession;
+      } catch {
+        // Restore failed — return null so the caller decides how to handle it.
+      }
+    }
+
+    return null;
+  }
+
+  // Fetch session on mount. Pre-seeds prevPreviewStatusRef so the notification
+  // effect treats the initial state as a no-op and doesn't re-fire old toasts.
+  // Falls back to localStorage history if no session can be recovered.
   useEffect(() => {
     async function initSession() {
       try {
-        const res = await fetch("/api/studio/session");
-        const data = (await res.json()) as EditSession;
+        const active = await fetchOrRestoreSession();
 
-        if (data.status !== "none") {
-          // Server has the session — normal path.
-          prevPreviewStatusRef.current = data.previewStatus ?? null;
-          saveActiveBranch(data.branchName);
-          saveSessionSnapshot(data);
-          setSession(data);
-          return;
-        }
-
-        // Server lost the session (cold start). Try to restore from localStorage.
-        prevPreviewStatusRef.current = null;
-        const snapshot = loadSessionSnapshot();
-
-        if (snapshot?.status === "active" && snapshot.branchName) {
-          // Re-hydrate the server-side in-memory session from our snapshot.
-          try {
-            const restoreRes = await fetch("/api/studio/session/restore", {
-              method: "POST",
-              headers: { "Content-Type": "application/json" },
-              body: JSON.stringify(snapshot),
-            });
-            if (restoreRes.ok) {
-              const restored = (await restoreRes.json()) as EditSession;
-              prevPreviewStatusRef.current = restored.previewStatus ?? null;
-              setSession(restored);
-              // Chat history will be loaded by the branchName effect below.
-              return;
-            }
-          } catch {
-            // Restore failed — fall through to history-only recovery.
+        if (active) {
+          prevPreviewStatusRef.current = active.previewStatus ?? null;
+          saveActiveBranch(active.branchName);
+          saveSessionSnapshot(active);
+          setSession(active);
+        } else {
+          prevPreviewStatusRef.current = null;
+          // Recover at least the chat history from localStorage.
+          const savedBranch = loadActiveBranch();
+          if (savedBranch) {
+            const saved = loadMessages(savedBranch);
+            if (saved.length > 0) setMessages(saved);
           }
-        }
-
-        // Restore failed or no snapshot — at minimum recover chat history.
-        const savedBranch = loadActiveBranch();
-        if (savedBranch) {
-          const saved = loadMessages(savedBranch);
-          if (saved.length > 0) setMessages(saved);
         }
       } catch {
         prevPreviewStatusRef.current = null;
@@ -213,6 +211,7 @@ export function ChatInterface() {
     }
 
     void initSession();
+    // eslint-disable-next-line react-hooks/exhaustive-deps
   }, []);
 
   // Restore chat history from localStorage whenever the branch name is first known.
@@ -233,23 +232,22 @@ export function ChatInterface() {
   }, [messages]);
 
   // Poll /api/studio/session every 5 s while preview is building.
-  // React manages the interval lifetime via the cleanup return — no manual refs needed.
+  // Uses fetchOrRestoreSession so a cold start during polling doesn't wipe the banner.
   useEffect(() => {
     if (session?.previewStatus !== "building") return;
 
     const id = setInterval(async () => {
       try {
-        const res = await fetch("/api/studio/session");
-        if (!res.ok) return;
-        const data = (await res.json()) as EditSession;
+        const active = await fetchOrRestoreSession();
         if (!isMountedRef.current) return;
-        setSession(data.status === "none" ? null : data);
+        setSession(active);
       } catch {
         // ignore transient errors
       }
     }, 5000);
 
     return () => clearInterval(id);
+    // eslint-disable-next-line react-hooks/exhaustive-deps
   }, [session?.previewStatus]);
 
   // Inject chat messages whenever the preview status transitions.
