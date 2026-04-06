@@ -22,7 +22,10 @@ export async function POST(request: Request): Promise<Response> {
   }
 
   if (!snapshot?.branchName || !snapshot?.status) {
-    return Response.json({ error: "Invalid session snapshot" }, { status: 400 });
+    return Response.json(
+      { error: "Invalid session snapshot" },
+      { status: 400 },
+    );
   }
 
   const session = restoreSession(user.username, snapshot);
