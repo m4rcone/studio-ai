@@ -43,11 +43,14 @@ export const env = {
     studioPassword: require("STUDIO_PASSWORD"),
   },
   vercel: {
-    // Generate at: Vercel → Project Settings → Deployment Protection
-    // → Protection Bypass for Automation.
-    // When set, preview URLs include the bypass token so anyone with the link
-    // can view the preview without a Vercel account or org login.
-    bypassSecret: optional("VERCEL_BYPASS_SECRET", ""),
+    // Vercel automatically injects VERCEL_AUTOMATION_BYPASS_SECRET into all
+    // functions once "Protection Bypass for Automation" is configured in
+    // Project Settings → Deployment Protection. No manual setup needed.
+    // Falls back to VERCEL_BYPASS_SECRET for local overrides.
+    bypassSecret: optional(
+      "VERCEL_AUTOMATION_BYPASS_SECRET",
+      optional("VERCEL_BYPASS_SECRET", ""),
+    ),
   },
 } as const;
 
