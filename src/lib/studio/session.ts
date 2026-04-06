@@ -80,12 +80,7 @@ function pollPreviewUrl(username: string, prNumber: number): void {
       const session = sessions.get(username);
       if (!session) return;
       if (url) {
-        // Append the Vercel bypass token when configured so anyone with the
-        // link can view the preview without a Vercel account or org login.
-        const bypass = env.vercel.bypassSecret;
-        session.previewUrl = bypass
-          ? `${url}?x-vercel-protection-bypass=${bypass}&x-vercel-set-bypass-cookie=1`
-          : url;
+        session.previewUrl = withBypass(url);
         session.previewStatus = "ready";
       } else {
         session.previewStatus = "error";
@@ -95,6 +90,22 @@ function pollPreviewUrl(username: string, prNumber: number): void {
       if (session) session.previewStatus = "error";
     }
   })();
+}
+
+// ---------------------------------------------------------------------------
+// Bypass URL helper
+// ---------------------------------------------------------------------------
+
+/**
+ * Appends the Vercel protection bypass token to a preview URL so anyone with
+ * the link can view it without a Vercel account.
+ * - Uses `x-vercel-set-bypass-cookie=samesitenone` (correct per Vercel docs).
+ * - No-ops if the URL already has the bypass param or no secret is configured.
+ */
+export function withBypass(url: string): string {
+  const bypass = env.vercel.bypassSecret;
+  if (!bypass || url.includes("x-vercel-protection-bypass")) return url;
+  return `${url}?x-vercel-protection-bypass=${bypass}&x-vercel-set-bypass-cookie=samesitenone`;
 }
 
 // ---------------------------------------------------------------------------
