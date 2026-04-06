@@ -1,5 +1,5 @@
 import { env } from "@/lib/studio/env";
-import { getSession } from "@/lib/studio/session";
+import { getSession, withBypass } from "@/lib/studio/session";
 import { getUser, unauthorized } from "../_helpers";
 
 /**
@@ -65,6 +65,9 @@ export async function GET(): Promise<Response> {
   );
   const checks = await checksRes.json();
 
+  const bypassSecret = env.vercel.bypassSecret;
+  const testUrl = "https://example.vercel.app";
+
   return Response.json({
     branch,
     sha,
@@ -72,6 +75,12 @@ export async function GET(): Promise<Response> {
       previewStatus: session.previewStatus,
       previewUrl: session.previewUrl,
       prNumber: session.prNumber,
+    },
+    bypass: {
+      configured: bypassSecret.length > 0,
+      // Show first 6 chars only — enough to confirm the value without exposing it
+      hint: bypassSecret.length > 0 ? `${bypassSecret.slice(0, 6)}… (${bypassSecret.length} chars)` : null,
+      sampleUrl: withBypass(testUrl),
     },
     deployments: deploymentDetails,
     checkRuns: (checks as { check_runs?: unknown[] }).check_runs ?? [],

@@ -115,8 +115,7 @@ async function commitJson(
   const isFirst = updated.changes.length === 1;
 
   if (isFirst) {
-    const prLine = updated.prUrl ? `Pull Request: ${updated.prUrl}\n` : "";
-    return `${prLine}A preview is being generated and will be ready in about 30–60 seconds.`;
+    return "A preview is being generated and will be ready in about 30–60 seconds.";
   }
   if (updated.previewStatus === "ready" && updated.previewUrl) {
     return `Preview your changes at: ${updated.previewUrl}`;

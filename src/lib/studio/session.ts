@@ -104,7 +104,13 @@ function pollPreviewUrl(username: string, prNumber: number): void {
  */
 export function withBypass(url: string): string {
   const bypass = env.vercel.bypassSecret;
-  if (!bypass || url.includes("x-vercel-protection-bypass")) return url;
+  if (!bypass) {
+    console.warn(
+      "[studio] VERCEL_AUTOMATION_BYPASS_SECRET is not set — preview URLs will require Vercel authentication",
+    );
+    return url;
+  }
+  if (url.includes("x-vercel-protection-bypass")) return url;
   return `${url}?x-vercel-protection-bypass=${bypass}&x-vercel-set-bypass-cookie=samesitenone`;
 }
 
