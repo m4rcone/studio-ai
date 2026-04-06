@@ -82,7 +82,7 @@ export function LoginForm() {
       {error && (
         <p
           role="alert"
-          className="rounded-[var(--radius)] border border-red-200 bg-red-50 px-3 py-2 text-sm text-red-600"
+          className="rounded-(--radius) border border-red-200 bg-red-50 px-3 py-2 text-sm text-red-600"
         >
           {error}
         </p>
@@ -91,7 +91,7 @@ export function LoginForm() {
       <button
         type="submit"
         disabled={loading}
-        className="bg-primary text-primary-foreground w-full cursor-pointer rounded-[var(--radius)] px-4 py-2.5 text-sm font-medium transition-opacity hover:opacity-90 disabled:opacity-60"
+        className="bg-primary text-primary-foreground w-full cursor-pointer rounded-(--radius) px-4 py-2.5 text-sm font-medium transition-opacity hover:opacity-90 disabled:opacity-60"
       >
         {loading ? "Signing in…" : "Sign in"}
       </button>

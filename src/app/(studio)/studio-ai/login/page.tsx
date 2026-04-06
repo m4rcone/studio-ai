@@ -18,7 +18,7 @@ export default async function LoginPage() {
         </div>
 
         {/* Form card */}
-        <div className="bg-background border-muted rounded-[var(--radius)] border p-6 shadow-sm">
+        <div className="bg-background border-muted rounded-(--radius) border p-6 shadow-sm">
           <LoginForm />
         </div>
       </div>
