@@ -44,6 +44,7 @@ export function SessionBanner(props: SessionBannerProps) {
   const [actionLoading, setActionLoading] = useState<
     "approve" | "discard" | null
   >(null);
+  const [actionError, setActionError] = useState<string | null>(null);
   const [showDiscardModal, setShowDiscardModal] = useState(false);
   const pollRef = useRef<ReturnType<typeof setInterval> | null>(null);
   const isMountedRef = useRef(true);
@@ -112,6 +113,7 @@ export function SessionBanner(props: SessionBannerProps) {
 
   async function handleApprove() {
     setActionLoading("approve");
+    setActionError(null);
     try {
       const res = await fetch("/api/studio/session/approve", {
         method: "POST",
@@ -119,7 +121,10 @@ export function SessionBanner(props: SessionBannerProps) {
         body: JSON.stringify({ sessionSnapshot: session }),
       });
       if (!res.ok) {
-        console.error("[studio] Approve failed:", await res.text());
+        const body = await res.text().catch(() => "");
+        const msg = body || `Server error (${res.status})`;
+        console.error("[studio] Approve failed:", msg);
+        setActionError(`Failed to publish: ${msg}`);
         return;
       }
       if (!isControlled) setOwnSession(null);
@@ -128,6 +133,9 @@ export function SessionBanner(props: SessionBannerProps) {
       } else {
         props.onSessionChange?.();
       }
+    } catch (err) {
+      const msg = err instanceof Error ? err.message : "Connection error";
+      setActionError(`Failed to publish: ${msg}`);
     } finally {
       setActionLoading(null);
     }
@@ -135,6 +143,7 @@ export function SessionBanner(props: SessionBannerProps) {
 
   async function handleDiscardConfirmed() {
     setActionLoading("discard");
+    setActionError(null);
     try {
       const res = await fetch("/api/studio/session/discard", {
         method: "POST",
@@ -142,7 +151,10 @@ export function SessionBanner(props: SessionBannerProps) {
         body: JSON.stringify({ sessionSnapshot: session }),
       });
       if (!res.ok) {
-        console.error("[studio] Discard failed:", await res.text());
+        const body = await res.text().catch(() => "");
+        const msg = body || `Server error (${res.status})`;
+        console.error("[studio] Discard failed:", msg);
+        setActionError(`Failed to discard: ${msg}`);
         return;
       }
       setShowDiscardModal(false);
@@ -152,6 +164,9 @@ export function SessionBanner(props: SessionBannerProps) {
       } else {
         props.onSessionChange?.();
       }
+    } catch (err) {
+      const msg = err instanceof Error ? err.message : "Connection error";
+      setActionError(`Failed to discard: ${msg}`);
     } finally {
       setActionLoading(null);
     }
@@ -224,7 +239,14 @@ export function SessionBanner(props: SessionBannerProps) {
             disabled={actionLoading !== null}
             className="bg-primary text-primary-foreground cursor-pointer rounded-[var(--radius)] px-3 py-1.5 text-xs transition-opacity hover:opacity-90 disabled:opacity-50"
           >
-            {actionLoading === "approve" ? "Publishing…" : "Publish"}
+            {actionLoading === "approve" ? (
+              <span className="flex items-center gap-1.5">
+                <span className="h-3 w-3 animate-spin rounded-full border border-current border-t-transparent" />
+                Publishing…
+              </span>
+            ) : (
+              "Publish"
+            )}
           </button>
           <button
             onClick={() => setShowDiscardModal(true)}
@@ -234,6 +256,10 @@ export function SessionBanner(props: SessionBannerProps) {
             Discard
           </button>
         </div>
+
+        {actionError && (
+          <p className="mt-2 text-xs text-red-600">{actionError}</p>
+        )}
       </div>
     </>
   );

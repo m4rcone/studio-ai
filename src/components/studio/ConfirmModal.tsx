@@ -26,11 +26,19 @@ export function ConfirmModal({
   onCancel,
 }: ConfirmModalProps) {
   const confirmRef = useRef<HTMLButtonElement>(null);
+  const cancelRef = useRef<HTMLButtonElement>(null);
 
-  // Focus the cancel button when opened (safer default for destructive actions)
+  // Focus the cancel button for destructive actions (safer default),
+  // or the confirm button for non-destructive actions.
   useEffect(() => {
-    if (open) confirmRef.current?.focus();
-  }, [open]);
+    if (open) {
+      if (destructive) {
+        cancelRef.current?.focus();
+      } else {
+        confirmRef.current?.focus();
+      }
+    }
+  }, [open, destructive]);
 
   // Close on Escape
   useEffect(() => {
@@ -69,6 +77,7 @@ export function ConfirmModal({
 
         <div className="flex justify-end gap-2">
           <button
+            ref={cancelRef}
             onClick={onCancel}
             disabled={loading}
             className="border-foreground/20 text-foreground hover:border-foreground/40 cursor-pointer rounded-[var(--radius)] border px-4 py-2 text-sm transition-colors disabled:opacity-50"
