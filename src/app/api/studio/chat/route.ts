@@ -1,5 +1,7 @@
 import { runAgent } from "@/lib/studio/agent";
+import { getSession, restoreSession } from "@/lib/studio/session";
 import { getUser, unauthorized } from "../_helpers";
+import type { EditSession } from "@/lib/studio/types";
 
 // Allow up to 1 minute — the agent may need several Anthropic round-trips
 // plus GitHub API calls (file reads, commits, PR creation).
@@ -16,9 +18,19 @@ export async function POST(request: Request): Promise<Response> {
     return Response.json({ error: "Invalid request body" }, { status: 400 });
   }
 
-  const { messages } = body as {
+  const { messages, sessionSnapshot } = body as {
     messages?: Array<{ role: "user" | "assistant"; content: string }>;
+    sessionSnapshot?: EditSession | null;
   };
+
+  // If the server lost the in-memory session (serverless cold start between
+  // requests), restore it from the client snapshot before running the agent.
+  // This prevents ensureSession() from creating a duplicate branch/PR.
+  if (sessionSnapshot?.status === "active" && sessionSnapshot.branchName) {
+    if (!getSession(user.username)) {
+      restoreSession(user.username, sessionSnapshot);
+    }
+  }
 
   if (!Array.isArray(messages) || messages.length === 0) {
     return Response.json(

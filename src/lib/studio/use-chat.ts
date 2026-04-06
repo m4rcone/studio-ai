@@ -21,13 +21,14 @@ interface Callbacks {
 export async function sendMessage(
   messages: ChatMessageData[],
   callbacks: Callbacks,
+  sessionSnapshot?: EditSession | null,
 ): Promise<void> {
   let res: Response;
   try {
     res = await fetch("/api/studio/chat", {
       method: "POST",
       headers: { "Content-Type": "application/json" },
-      body: JSON.stringify({ messages }),
+      body: JSON.stringify({ messages, sessionSnapshot: sessionSnapshot ?? null }),
     });
   } catch (err) {
     callbacks.onError(

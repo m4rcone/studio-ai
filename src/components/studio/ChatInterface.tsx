@@ -401,7 +401,7 @@ export function ChatInterface() {
         );
         setIsLoading(false);
       },
-    });
+    }, sessionRef.current);
   }
 
   function handleApproved() {
