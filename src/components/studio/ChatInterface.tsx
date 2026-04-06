@@ -390,15 +390,16 @@ export function ChatInterface() {
 
       onError(error) {
         setMessages((prev) =>
-          prev.map((m) =>
-            m.id === assistantId
-              ? {
-                  ...m,
-                  content: m.content || `Something went wrong: ${error}`,
-                  isStreaming: false,
-                }
-              : m,
-          ),
+          prev.map((m) => {
+            if (m.id !== assistantId) return m;
+            // Append the error notice after any partial content that was streamed.
+            const notice = `\n\n_${error}_`;
+            return {
+              ...m,
+              content: m.content ? m.content + notice : `Something went wrong: ${error}`,
+              isStreaming: false,
+            };
+          }),
         );
         setIsLoading(false);
       },

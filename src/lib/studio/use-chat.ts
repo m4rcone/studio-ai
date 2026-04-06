@@ -51,6 +51,7 @@ export async function sendMessage(
   const reader = res.body.getReader();
   const decoder = new TextDecoder();
   let buffer = "";
+  let receivedDone = false;
 
   try {
     while (true) {
@@ -86,17 +87,29 @@ export async function sendMessage(
             callbacks.onSessionUpdate(event.session);
             break;
           case "done":
+            receivedDone = true;
             callbacks.onDone(event.session);
             break;
           case "error":
+            receivedDone = true; // treat as terminal event
             callbacks.onError(event.message);
             break;
         }
       }
     }
+
+    // Stream closed without a done/error event — likely a server timeout or
+    // infrastructure interruption. Treat as an error so the UI unlocks.
+    if (!receivedDone) {
+      callbacks.onError(
+        "The response was interrupted. Please try sending your message again.",
+      );
+    }
   } catch (err) {
     callbacks.onError(
-      err instanceof Error ? err.message : "Stream interrupted unexpectedly.",
+      err instanceof Error
+        ? err.message
+        : "Connection lost. Please try again.",
     );
   } finally {
     reader.releaseLock();

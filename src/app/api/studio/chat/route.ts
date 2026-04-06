@@ -1,6 +1,10 @@
 import { runAgent } from "@/lib/studio/agent";
 import { getUser, unauthorized } from "../_helpers";
 
+// Allow up to 1 minute — the agent may need several Anthropic round-trips
+// plus GitHub API calls (file reads, commits, PR creation).
+export const maxDuration = 60;
+
 export async function POST(request: Request): Promise<Response> {
   const user = await getUser();
   if (!user) return unauthorized();
