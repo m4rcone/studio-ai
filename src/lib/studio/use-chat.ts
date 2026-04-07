@@ -56,6 +56,7 @@ export async function sendMessage(
   const decoder = new TextDecoder();
   let buffer = "";
   let receivedDone = false;
+  let hadToolResults = false;
 
   try {
     while (true) {
@@ -85,6 +86,7 @@ export async function sendMessage(
             callbacks.onToolCall(event.name, event.input);
             break;
           case "tool_result":
+            hadToolResults = true;
             callbacks.onToolResult(event.name, event.summary);
             break;
           case "session_update":
@@ -104,9 +106,12 @@ export async function sendMessage(
 
     // Stream closed without a done/error event — likely a server timeout or
     // infrastructure interruption. Treat as an error so the UI unlocks.
+    // If tools executed successfully, reassure the user that their changes were saved.
     if (!receivedDone) {
       callbacks.onError(
-        "The response was interrupted. Please try sending your message again.",
+        hadToolResults
+          ? "The response timed out, but your changes were saved. The preview will update shortly."
+          : "The response was interrupted. Please try sending your message again.",
       );
     }
   } catch (err) {

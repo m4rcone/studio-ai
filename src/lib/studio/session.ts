@@ -216,7 +216,14 @@ export async function recordChange(
       session.previewStatus = "error";
     }
   } else if (session.prNumber > 0) {
-    // Subsequent changes — update PR description
+    // Subsequent changes — update PR description and restart preview polling.
+    // A new commit on the branch triggers a new Vercel deployment, so the old
+    // preview URL becomes stale. Reset status to "building" so the UI shows
+    // the progress indicator and the polling loop picks up the new URL.
+    session.previewUrl = null;
+    session.previewStatus = "building";
+    pollPreviewUrl(username, session.prNumber);
+
     try {
       await updatePullRequest(session.prNumber, buildPrBody(session.changes));
     } catch {
