@@ -23,6 +23,18 @@
         "intro": "Every service is handled by the same lead architect from start to finish — ensuring creative continuity and a coherent final result. We do not outsource or fragment. Your project has one name and one face throughout.",
         "items": [
           {
+            "id": "svc-interiors",
+            "number": "03",
+            "name": "Interior Design",
+            "description": "Full curation of materials, furniture, lighting, and objects to create environments with personality, harmony, and visual comfort.",
+            "details": [
+              "Visual concept",
+              "Mood board",
+              "Material specification",
+              "Purchase coordination"
+            ]
+          },
+          {
             "id": "svc-residential",
             "number": "01",
             "name": "Residential Architecture",
@@ -44,18 +56,6 @@
               "Space planning",
               "Facade design",
               "Signage"
-            ]
-          },
-          {
-            "id": "svc-interiors",
-            "number": "03",
-            "name": "Interior Design",
-            "description": "Full curation of materials, furniture, lighting, and objects to create environments with personality, harmony, and visual comfort.",
-            "details": [
-              "Visual concept",
-              "Mood board",
-              "Material specification",
-              "Purchase coordination"
             ]
           },
           {
