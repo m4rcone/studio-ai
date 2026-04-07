@@ -242,16 +242,17 @@ export async function getPreviewUrlFromPR(
   const pr = await request<{ head: { ref: string; sha: string } }>(
     `/repos/${owner}/${repo}/pulls/${prNumber}`,
   );
-  const branch = pr.head.ref;
   const sha = pr.head.sha;
 
   // --- Strategy 1: GitHub Deployments API ---
   // Vercel registers deployments here. Environment name may be "Preview",
   // "Preview – project-name", etc. — match case-insensitively.
+  // Filter by SHA (not branch ref) to only match the LATEST commit's deployment,
+  // avoiding stale URLs from previous commits on the same branch.
   const allDeployments = await request<
     Array<{ id: number; environment: string }>
   >(
-    `/repos/${owner}/${repo}/deployments?ref=${encodeURIComponent(branch)}&per_page=10`,
+    `/repos/${owner}/${repo}/deployments?sha=${sha}&per_page=10`,
   );
 
   if (Array.isArray(allDeployments)) {
