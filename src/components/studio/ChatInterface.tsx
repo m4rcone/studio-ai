@@ -367,7 +367,14 @@ export function ChatInterface() {
         },
 
         onSessionUpdate(newSession) {
-          setSession(newSession as EditSession);
+          const s = newSession as EditSession;
+          setSession(s);
+          // Save snapshot eagerly — don't rely on useEffect which might not
+          // run before a timeout kills the stream. This ensures the latest
+          // session state (including change count) is always persisted.
+          if (s?.status === "active") {
+            saveSessionSnapshot(s);
+          }
         },
 
         onToolResult(name, summary) {
