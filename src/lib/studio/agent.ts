@@ -354,34 +354,8 @@ export async function runAgent(params: {
             });
           }
 
-          // Append tool results as a user turn (full content — the AI needs it
-          // in the next iteration to decide what to edit).
+          // Append tool results as a user turn
           history.push({ role: "user", content: toolResults });
-
-          // Trim OLDER tool results in the history to keep context lean for
-          // subsequent Anthropic calls. Only truncate results from PREVIOUS
-          // iterations (not the one we just added).
-          if (history.length > 4) {
-            for (let i = 0; i < history.length - 2; i++) {
-              const msg = history[i];
-              if (msg.role !== "user" || typeof msg.content === "string")
-                continue;
-              const blocks = msg.content as ToolResultBlock[];
-              for (let j = 0; j < blocks.length; j++) {
-                if (
-                  blocks[j].type === "tool_result" &&
-                  blocks[j].content.length > 800
-                ) {
-                  blocks[j] = {
-                    ...blocks[j],
-                    content:
-                      blocks[j].content.slice(0, 300) +
-                      "\n\n[...file content truncated — already processed]",
-                  };
-                }
-              }
-            }
-          }
         }
 
         if (iteration >= MAX_ITERATIONS) {
