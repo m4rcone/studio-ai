@@ -24,7 +24,7 @@
         "items": [
           {
             "id": "svc-interiors",
-            "number": "03",
+            "number": "01",
             "name": "Interior Design",
             "description": "Full curation of materials, furniture, lighting, and objects to create environments with personality, harmony, and visual comfort.",
             "details": [
@@ -36,7 +36,7 @@
           },
           {
             "id": "svc-residential",
-            "number": "01",
+            "number": "02",
             "name": "Residential Architecture",
             "description": "Full project development for houses and apartments, from feasibility study to detailed construction documents, with 3D visualization for approval before construction.",
             "details": [
@@ -48,7 +48,7 @@
           },
           {
             "id": "svc-commercial",
-            "number": "02",
+            "number": "03",
             "name": "Commercial Architecture",
             "description": "Design for stores, restaurants, hotels, and retail spaces — focused on customer experience and brand identity, from floor plan to facade.",
             "details": [
