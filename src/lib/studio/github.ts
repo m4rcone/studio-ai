@@ -97,7 +97,7 @@ export async function createBranch(
 // ---------------------------------------------------------------------------
 export async function commitFiles(
   branch: string,
-  files: Array<{ path: string; content: string }>,
+  files: Array<{ path: string; content: string; sha?: string }>,
   message: string,
 ): Promise<{ sha: string }> {
   const { owner, repo } = env.github;
@@ -105,12 +105,15 @@ export async function commitFiles(
   let lastSha = "";
 
   for (const file of files) {
-    let existingSha: string | undefined;
-    try {
-      const existing = await readFile(file.path, branch);
-      existingSha = existing.sha;
-    } catch {
-      // File doesn't exist yet — creating it fresh
+    // Use pre-fetched SHA when available (avoids a redundant readFile round-trip)
+    let existingSha: string | undefined = file.sha;
+    if (!existingSha) {
+      try {
+        const existing = await readFile(file.path, branch);
+        existingSha = existing.sha;
+      } catch {
+        // File doesn't exist yet — creating it fresh
+      }
     }
 
     const encoded = encodeURIComponent(file.path).replace(/%2F/g, "/");

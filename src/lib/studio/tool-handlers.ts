@@ -94,6 +94,7 @@ async function commitJson(
   data: unknown,
   description: string,
   username: string,
+  sha?: string,
 ): Promise<string> {
   const activeSession = await ensureSession(username, description);
   const branch = activeSession.branchName;
@@ -101,7 +102,7 @@ async function commitJson(
 
   await github.commitFiles(
     branch,
-    [{ path: filePath, content }],
+    [{ path: filePath, content, sha }],
     `content(studio): ${description}`,
   );
 
@@ -150,7 +151,7 @@ export async function executeTool(
         value: unknown;
       }>;
 
-      const { data } = await readJson(filePath, username);
+      const { data, sha } = await readJson(filePath, username);
       const applied: string[] = [];
 
       for (const change of changes) {
@@ -164,6 +165,7 @@ export async function executeTool(
         data,
         description,
         username,
+        sha,
       );
 
       return [`Updated ${filePath}:`, ...applied, ``, previewUrl].join("\n");
@@ -177,7 +179,7 @@ export async function executeTool(
       const item = toolInput.item as unknown;
       const position = (toolInput.position as string | undefined) ?? "end";
 
-      const { data } = await readJson(filePath, username);
+      const { data, sha } = await readJson(filePath, username);
       const arr = getNestedValue(data, listPath);
       if (!Array.isArray(arr)) {
         throw new Error(`Path "${listPath}" in ${filePath} is not an array`);
@@ -195,6 +197,7 @@ export async function executeTool(
         data,
         description,
         username,
+        sha,
       );
 
       return [
@@ -210,7 +213,7 @@ export async function executeTool(
       const listPath = requireString(toolInput, "list_path");
       const match = toolInput.match as Record<string, unknown>;
 
-      const { data } = await readJson(filePath, username);
+      const { data, sha } = await readJson(filePath, username);
       const removed = removeFromArray(data, listPath, match);
 
       if (!removed) {
@@ -223,6 +226,7 @@ export async function executeTool(
         data,
         description,
         username,
+        sha,
       );
 
       return [
@@ -238,7 +242,7 @@ export async function executeTool(
       const listPath = requireString(toolInput, "list_path");
       const newOrder = toolInput.new_order as number[];
 
-      const { data } = await readJson(filePath, username);
+      const { data, sha } = await readJson(filePath, username);
       reorderArray(data, listPath, newOrder);
 
       const description = `reorder ${listPath} in ${filePath.split("/").pop()}`;
@@ -247,6 +251,7 @@ export async function executeTool(
         data,
         description,
         username,
+        sha,
       );
 
       return [

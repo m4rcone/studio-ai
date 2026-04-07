@@ -241,9 +241,12 @@ export function ChatMessage({
           isUser ? (
             <p className="whitespace-pre-wrap">{content}</p>
           ) : (
-            // Append the cursor character to the content string so it renders
-            // inline at the end of the last paragraph, not as a separate element.
-            <div>{renderMarkdown(isStreaming ? content + "▌" : content)}</div>
+            <div>
+              {renderMarkdown(content)}
+              {isStreaming && (
+                <span className="ml-0.5 inline-block h-3.5 w-1.5 animate-pulse rounded-sm bg-current align-middle opacity-50" />
+              )}
+            </div>
           )
         ) : isStreaming ? (
           /* Typing indicator — shown while waiting for first token */
